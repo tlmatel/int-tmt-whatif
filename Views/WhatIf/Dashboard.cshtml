@@ -1,0 +1,219 @@
+@{
+    ViewData["Title"] = "CoreWhatIf";
+}
+
+<!-- Hero -->
+<div class="text-white py-5 mb-5" style="margin:-1rem -1.5rem 0;padding-left:1.5rem;padding-right:1.5rem;background:linear-gradient(135deg,#4a6fa5 0%,#6b8cce 50%,#89a8d8 100%)">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-3 bg-primary d-inline-flex align-items-center justify-content-center me-3" style="width:72px;height:72px">
+                        <i class="bi bi-graph-up-arrow text-white" style="font-size:2.2rem"></i>
+                    </div>
+                    <div>
+                        <h1 class="display-5 fw-bold mb-0">Core What If</h1>
+                        <p class="text-white-50 mb-0 fs-5">Migration Pricing Analyzer</p>
+                    </div>
+                </div>
+                <p class="lead mb-0" style="max-width:700px">
+                    Diseña el pricing de Core SaaS, planifica la migración de clientes
+                    y proyecta mes a mes la evolución de ARR con diferentes escenarios.
+                </p>
+            </div>
+            <div class="col-lg-5 text-end d-none d-lg-block">
+                <div class="d-inline-flex gap-4 align-items-end opacity-75">
+                    <div class="text-center">
+                        <i class="bi bi-calculator" style="font-size:3.5rem"></i>
+                        <div class="small mt-1">Simulador</div>
+                    </div>
+                    <div class="text-center">
+                        <i class="bi bi-chevron-double-right" style="font-size:2rem"></i>
+                    </div>
+                    <div class="text-center">
+                        <i class="bi bi-rocket-takeoff" style="font-size:3.5rem"></i>
+                        <div class="small mt-1">Plan</div>
+                    </div>
+                    <div class="text-center">
+                        <i class="bi bi-chevron-double-right" style="font-size:2rem"></i>
+                    </div>
+                    <div class="text-center">
+                        <i class="bi bi-bar-chart-line" style="font-size:3.5rem"></i>
+                        <div class="small mt-1">Comparador</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <!-- Flujo visual compacto -->
+    <div class="card mb-5 border-0 bg-light">
+        <div class="card-body py-3">
+            <div class="d-flex align-items-center justify-content-center gap-3 flex-wrap">
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:50px;height:50px">
+                        <i class="bi bi-sliders fs-5"></i>
+                    </div>
+                    <div class="small fw-bold mt-1">Tarifas</div>
+                </div>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:50px;height:50px">
+                        <i class="bi bi-people fs-5"></i>
+                    </div>
+                    <div class="small fw-bold mt-1">Clientes</div>
+                </div>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <div class="text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:50px;height:50px">
+                        <i class="bi bi-save fs-5"></i>
+                    </div>
+                    <div class="small fw-bold mt-1">Escenarios</div>
+                </div>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <div class="text-center">
+                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width:50px;height:50px">
+                        <i class="bi bi-funnel fs-5"></i>
+                    </div>
+                    <div class="small fw-bold mt-1">Prioriza</div>
+                </div>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <div class="text-center">
+                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width:50px;height:50px">
+                        <i class="bi bi-graph-up-arrow fs-5"></i>
+                    </div>
+                    <div class="small fw-bold mt-1">Proyecta</div>
+                </div>
+                <i class="bi bi-arrow-right text-muted"></i>
+                <div class="text-center">
+                    <div class="rounded-circle bg-warning text-dark d-inline-flex align-items-center justify-content-center" style="width:50px;height:50px">
+                        <i class="bi bi-bar-chart-line fs-5"></i>
+                    </div>
+                    <div class="small fw-bold mt-1">Compara</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3 Cards -->
+    <div class="row g-4 mb-5">
+        <!-- Simulador -->
+        <div class="col-lg-4">
+            <div class="card h-100 border-2 border-primary shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-white bg-opacity-25 d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px">
+                            <i class="bi bi-calculator fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">1. Simulador</h5>
+                            <small class="opacity-75">Define tu modelo de pricing</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-3">
+                        <li><strong>Tarifas por tramos</strong> de usuarios (Estándar y DAM)</li>
+                        <li><strong>Tarifas de satélites</strong> por módulo adicional</li>
+                        <li><strong>Descuento comercial</strong> o incremento de ARR objetivo</li>
+                        <li><strong>Coste de infraestructura</strong> para argumentar la migración</li>
+                        <li><strong>Excluir excepciones</strong> con un check por cliente</li>
+                        <li><strong>Guardar simulaciones</strong> con nombre para reutilizarlas</li>
+                    </ul>
+                    <p class="text-muted small">
+                        Cada cliente muestra ARR nuevo, rebaja, ahorro de infra y argumento de venta.
+                        Clic en una fila para ver el bridge visual.
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-3">
+                    <a asp-action="Simulador" class="btn btn-primary w-100">
+                        <i class="bi bi-calculator me-1"></i> Ir al Simulador
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan de Migración -->
+        <div class="col-lg-4">
+            <div class="card h-100 border-2 border-success shadow-sm">
+                <div class="card-header bg-success text-white py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-white bg-opacity-25 d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px">
+                            <i class="bi bi-rocket-takeoff fs-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">2. Plan de Migración</h5>
+                            <small class="opacity-75">Prioriza y proyecta ARR</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-3">
+                        <li><strong>Selecciona una simulación</strong> guardada o la activa</li>
+                        <li><strong>Capacidad</strong>: cuántos clientes migras al mes</li>
+                        <li><strong>Filtros</strong>: excluir satélites, DAM o limitar usuarios</li>
+                        <li><strong>Priorización automática</strong>: fáciles primero</li>
+                        <li><strong>Gráfico acumulado</strong> de ARR nuevo vs actual</li>
+                        <li><strong>Guardar planes</strong> con distintas configuraciones</li>
+                    </ul>
+                    <p class="text-muted small">
+                        Tabla detallada con clientes agrupados por mes, totales mensuales
+                        y acumulados de ARR actual, nuevo y delta.
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-3">
+                    <a asp-action="PlanMigracion" class="btn btn-success w-100">
+                        <i class="bi bi-rocket-takeoff me-1"></i> Ir al Plan de Migración
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparador -->
+        <div class="col-lg-4">
+            <div class="card h-100 border-2 border-warning shadow-sm">
+                <div class="card-header bg-warning text-dark py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-dark bg-opacity-25 d-inline-flex align-items-center justify-content-center me-3" style="width:44px;height:44px">
+                            <i class="bi bi-bar-chart-line fs-4 text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">3. Comparador</h5>
+                            <small>Decide la mejor estrategia</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-3">
+                        <li><strong>Selección múltiple</strong> de planes guardados</li>
+                        <li><strong>Gráfico multi-serie</strong> de ARR acumulado por mes</li>
+                        <li><strong>Gráfico de delta</strong>: ganancia neta de cada escenario</li>
+                        <li><strong>Tabla resumen</strong> con KPIs lado a lado</li>
+                        <li>Compara <strong>escenarios conservadores vs agresivos</strong></li>
+                        <li>Ideal para <strong>presentar alternativas</strong> a dirección</li>
+                    </ul>
+                    <p class="text-muted small">
+                        Cada plan puede usar una simulación, capacidad y filtros diferentes.
+                        Ve de un vistazo cuál llega más alto y cuál más rápido.
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-3">
+                    <a asp-action="ComparadorPlanes" class="btn btn-warning text-dark w-100">
+                        <i class="bi bi-bar-chart-line me-1"></i> Ir al Comparador
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Objetivo -->
+    <div class="alert alert-light border text-center mb-4">
+        <i class="bi bi-bullseye me-1"></i>
+        <strong>Objetivo:</strong> Diseñar un pricing competitivo para Core SaaS y generar un plan de migración
+        que muestre, mes a mes, cómo evoluciona el ARR a medida que se van migrando clientes
+        &mdash; empezando por los más sencillos y escalando progresivamente.
+    </div>
+</div>

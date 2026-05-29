@@ -1,0 +1,440 @@
+========================================================================================================================
+INFORME COMPLETO DE INCONSISTENCIAS - 2605_potencial_core.xls
+Generado para revisión manual y corrección
+========================================================================================================================
+
+
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+  1. POTENCIAL_CORE DICE 'NO TIENE PRODUCTO' PERO SÍ APARECE EN LA PESTAÑA DEL PRODUCTO
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+Código   Cliente                                            Flag en Potencial_Core    Pestaña donde SÍ aparece
+------------------------------------------------------------------------------------------------------------------------
+155      SUMN. ELECTRICOS JARAMA, S.L.                      hasObras=NO                 Pestaña Obras
+565      COEVA GIRONA, S.A.                                 hasObras=NO                 Pestaña Obras
+782      ALMACENES ELECTRICOS MADRILEÑOS, S.A.              hasObras=NO                 Pestaña Obras
+1123     COMERCIAL D'ELECT. INDUSTRIAL, S.A.                hasObras=NO                 Pestaña Obras
+1454     SUBMINISTRAMENTS GUIXOLS, S.L.                     hasObras=NO                 Pestaña Obras
+1683     ELCOMI, S.A.                                       hasObras=NO                 Pestaña Obras
+1728     ANDALUZA DE SUMN. ELCOS. E IND., S.A.              hasObras=NO                 Pestaña Obras
+1874     ELECTROMAIN ELECTRONICA INDUSTRIAL, S.L.           hasObras=NO                 Pestaña Obras
+2192     CENTRAL DE REPAR. DE CLIMATITZACIO, S.L.           hasObras=NO                 Pestaña Obras
+2743     AISLAM. ACUSTICOS DE LEVANTE, S.L.                 hasObras=NO                 Pestaña Obras
+3741     TECNOLOGIA TERMICA, S.A.                           hasObras=NO                 Pestaña Obras
+3841     LOPEZ MENGUAL SUMN. ELCOS., S.L.                   hasObras=NO                 Pestaña Obras
+3865     NAVARRO APLIC. TERMICAS E HIDRAULICAS, S.A.        hasObras=NO                 Pestaña Obras
+4048     BEFE AUTOMATISMOS, S.L.                            hasObras=NO                 Pestaña Obras
+4301     VELTIA BARCELONA, S.L.                             hasObras=NO                 Pestaña Obras
+4478     HIDROKALOR CANARIAS, S.A.                          hasObras=NO                 Pestaña Obras
+5344     TUBAGUA MAS ESPACIO, S.L.                          hasObras=NO                 Pestaña Obras
+
+
+
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+  2. CLIENTES EN PESTAÑAS SATÉLITE QUE NO EXISTEN EN POTENCIAL_CORE (huérfanos)
+     Estos clientes NO se cargan en la app porque no tienen ficha principal.
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+Total: 99 clientes huérfanos
+
+Código   Nombre (de pestaña satélite)                  Productos                           Usuarios por producto
+------------------------------------------------------------------------------------------------------------------------
+20       ELEKSA - SUMN. ELECTROMECANICOS (Cliente Baja GO!Manage                           GO!Manage:8
+137      COELSA                                        Fegime, GO!Manage                   Fegime:0, GO!Manage:4
+178      ELECTRIFICACIONES SANCHO, S.L.                MobileA                             MobileA:3
+183      BERDIN ALICANTE, S.L. (LUCERO DE LEVANTE) (Cl MobileE, GO!Manage                  MobileE:30, GO!Manage:50
+216      EBRICO, S.L. (Cliente Baja)                   GO!Manage                           GO!Manage:7
+270      MAGAÑA Y MORENO, S.L. (Cliente Baja)          GO!Manage                           GO!Manage:16
+468      ELECTRO ORENSE, S.L. (Cliente Baja)           GO!Manage                           GO!Manage:15
+511      COEVA VIC                                     MobileA, Fegime, GO!Manage          MobileA:3, Fegime:0, GO!Manage:6
+512      COEVA-TECNICAL GRUP, S.L.                     GO!Manage                           GO!Manage:1
+611      DEGRA (Cliente Baja)                          GO!Manage                           GO!Manage:1
+642      ELECTRO MERCANTIL GUADALAJARA DAM, S.A.       Auna, GO!Manage                     Auna:0, GO!Manage:7
+677      AIGUA BAIX, S.A. (Cliente Baja)               GO!Manage                           GO!Manage:1
+743      SUEPRAT & ALARTE, S.L. (Cliente Baja)         GO!Manage                           GO!Manage:7
+814      TUDELA PERIBAÑEZ, ANASTASIO (Cliente Baja)    GO!Manage                           GO!Manage:1
+856      ELCA                                          MobileA                             MobileA:2
+870      SILVA Y VILCHES, S.A. (Cliente Baja)          GO!Manage                           GO!Manage:13
+910      TALLERES L. PINAZO, S.A.                      MobileA                             MobileA:4
+1078     DISMEVA VALLADOLID, S.L.U. (Cliente Baja)     GO!Manage                           GO!Manage:10
+1102     BATTANER E HIJOS, S.A. (Cliente Baja)         GO!Manage                           GO!Manage:2
+1387     CINTUL, S.A. (Cliente Baja)                   GO!Manage                           GO!Manage:1
+1464     DAGSA (Cliente Baja)                          GO!Manage                           GO!Manage:4
+1481     INGELECTOR, S.L.                              MobileA                             MobileA:1
+1494     FREIXAS I ROS, S.L.                           MobileA                             MobileA:1
+1695     COMERCIAL LIDER COMP. ELECTRICOS (Cliente Baj GO!Manage                           GO!Manage:6
+1850     AEBA (Cliente Baja)                           GO!Manage                           GO!Manage:4
+1885     JAIME REY E HIJOS, S.L. (Cliente Baja)        GO!Manage                           GO!Manage:6
+1952     GRUMELEC, S.L.                                GO!Manage                           GO!Manage:4
+1953     UNITTAS DISTRIBUCION VIRTUAL, S.A. (EX-FINIST GO!Manage                           GO!Manage:5
+2053     SUMINISTROS SERPIS, S.L. (EX-IME)             GO!Manage                           GO!Manage:8
+2129     FILTROS CASTELLO, S.L. (Cliente Baja)         GO!Manage                           GO!Manage:7
+2230     GENERAL DE SUMINISTROS FRIGORIFICOS, S.A - GS GO!Manage                           GO!Manage:8
+2247     ASLAK, S.L. (Cliente Baja)                    GO!Manage                           GO!Manage:30
+2302     ALPHALIGHT ESPAÑA, S.A.                       GO!Manage                           GO!Manage:2
+2419     IGEA ILUMINACION, S.L.                        GO!Manage                           GO!Manage:3
+2737     TELNOR, S.L.                                  MobileA                             MobileA:1
+2739     ELECTROMAT BALEAR, S.L.                       GO!Manage                           GO!Manage:5
+2744     ERFRI                                         GO!Manage                           GO!Manage:52
+2838     ACCESORIOS FONTANERIA MORALES, S.L. (Cliente  GO!Manage                           GO!Manage:4
+3084     AB ELECTRICIDAD, S.L. (Cliente Baja)          GO!Manage                           GO!Manage:23
+3085     DISTRIBUCION DE FRIO HDF, S.L.                GO!Manage                           GO!Manage:6
+3086     CAPITAL HOLDING S&B BROTHERS "ALCOTEC"        MobileA                             MobileA:1
+3134     ALMAGRUPO / AUNA DISTRIBUCION                 Auna, GO!Manage                     Auna:0, GO!Manage:5
+3149     FERINTEGRA '96, S.L. (FERREAL) (Cliente Baja) GO!Manage                           GO!Manage:10
+3314     ACTIVIDADES ELECTRICAS BOXTAR, S.L.           GO!Manage                           GO!Manage:12
+3319     OSMA Y GUERRERO, S.L. (Cliente Baja)          GO!Manage                           GO!Manage:5
+3340     ROALEX SANEHOGAR, S.L.                        Auna, GO!Manage                     Auna:0, GO!Manage:6
+3382     DISHELEC 65, S.L. (Cliente Baja)              GO!Manage                           GO!Manage:3
+3508     M.E.M. ROCHE, S.L.                            MobileA                             MobileA:2
+3536     LAMPAMAN - CLICLIGHT VILLARROBLEDO (Cliente B GO!Manage                           GO!Manage:5
+3586     DE LOS REYES REPARACIONES Y VENTAS, S.L.      MobileA                             MobileA:5
+3595     AURELIO TORRES, S.L.                          MobileA, GO!Manage                  MobileA:3, GO!Manage:15
+3646     ELECTRICIDAD LA SERENA, S.L.                  MobileA                             MobileA:2
+3717     CABO ELECTRIC, S.L. (Cliente Baja)            GO!Manage                           GO!Manage:1
+3723     MAT.ELCO.REDES Y TELECOMN., S.L.-MERTEL (Clie GO!Manage                           GO!Manage:4
+3724     ECOELECTRIC SUMINISTROS, S.L.                 MobileA                             MobileA:2
+3788     ALMACENES NARTALLO, S.L. (Cliente Baja)       GO!Manage                           GO!Manage:8
+3845     DAP MARESME AUTOMATITZACIO INDUSTRIAL (Client GO!Manage                           GO!Manage:4
+3876     COMERCIAL DISBANY 1965, S.L.                  MobileA                             MobileA:1
+3893     SUBECLIMA (Cliente Baja)                      GO!Manage                           GO!Manage:3
+3894     ARADILLA SOLUCIONES INDUSTRIALES, S.L. (Clien GO!Manage                           GO!Manage:3
+3909     SERFONCAL, S.L. (Cliente Baja)                GO!Manage                           GO!Manage:16
+3923     DISMAELECTRIC, S.L.U. (Cliente Baja)          GO!Manage                           GO!Manage:3
+3927     PROMOSA (Cliente Baja)                        GO!Manage                           GO!Manage:2
+3967     ALBEROLA VERDU, S.L.  (ALVERLAMP)             Obras, GO!Manage                    Obras:0, GO!Manage:12
+3976     INSTALACIONES ELECTRISAT, S.L.                MobileE                             MobileE:3
+3982     SIST.ENERGETICOS EFICIENTES, S.L.U.- SISTENEF MobileA                             MobileA:1
+4006     ZELSIA DESARROLLOS INTEGRALES, S.L.U. (Client GO!Manage                           GO!Manage:6
+4014     COMERCIAL LEITEN PVC, S.C.P. (Cliente Baja)   GO!Manage                           GO!Manage:1
+4018     DISTRIMEL ZARAGOZA, S.L. (Cliente Baja)       GO!Manage                           GO!Manage:1
+4026     KONTROL & LED LIGHTING, S.L. - NORDLED (Clien GO!Manage                           GO!Manage:2
+4031     DEAC SOLUCIONS ENERGETIQUES, S.L. (Cliente Ba GO!Manage                           GO!Manage:9
+4040     SUMSEL GIRONA, S.L. "SUMINISTRES LA SELVA" (C GO!Manage                           GO!Manage:3
+4044     PRODELECTRIC, S.L. (Cliente Baja)             GO!Manage                           GO!Manage:1
+4050     FERROCANO, S.L (Cliente Baja)                 MobileE, GO!Manage                  MobileE:2, GO!Manage:18
+4220     SUMELEC VIZCAYA, S.L. (Cliente Baja)          GO!Manage                           GO!Manage:10
+4237     ALDISOR ELECTRICIDAD, S.L.U. (Cliente Baja)   GO!Manage                           GO!Manage:4
+4241     SYSCLIMA                                      GO!Manage                           GO!Manage:6
+4255     SAVA, S.L. (Cliente Baja)                     GO!Manage                           GO!Manage:18
+4257     ACCIO INTERMEDIARIA, S.L.U.                   GO!Manage                           GO!Manage:2
+4269     OLIVE I CAMPANYA, JOAN (Cliente Baja)         GO!Manage                           GO!Manage:1
+4278     REPUESTOS SAT 2014, S.L. (Cliente Baja)       GO!Manage                           GO!Manage:1
+4285     FERRETERIA DEL AIRE, S.L. (Cliente Baja)      GO!Manage                           GO!Manage:6
+4292     PIRINENCA SERVEI ELECTRIC, S.L.               GO!Manage                           GO!Manage:6
+4300     SUMRAS 2010, S.L. (Cliente Baja)              GO!Manage                           GO!Manage:7
+4305     LOSIGAS (Cliente Baja)                        GO!Manage                           GO!Manage:3
+4306     PRATS CLAPES, S.L. (Cliente Baja)             GO!Manage                           GO!Manage:2
+4318     MITSUCO AC SPAIN, S.A. (Cliente Baja)         GO!Manage                           GO!Manage:1
+4329     PLADEX IBERIA, S.L.                           GO!Manage                           GO!Manage:2
+4330     PILIGHT SHOP, S.L.                            GO!Manage                           GO!Manage:5
+4375     AUTOMOCION ISLA, S.A. (Cliente Baja)          GO!Manage                           GO!Manage:4
+4380     AMBAR PROJECTES I INSTAL·LACIONS, S.L.U. (Cli GO!Manage                           GO!Manage:1
+4488     M.I.G.E.S.A., S.L.L.- MIGESA (Cliente Baja)   GO!Manage                           GO!Manage:1
+4592     ALMACEN CENTRAL COMPRAS ELECTRICAS "SERRATO"  GO!Manage                           GO!Manage:1
+4645     TECNICAL VIC, S.L. (Cliente Baja)             GO!Manage                           GO!Manage:1
+4748     FIT-3, S.L.                                   GO!Manage                           GO!Manage:1
+4788     ISA DATA, S.L. (Cliente Baja)                 Obras, GO!Manage                    Obras:0, GO!Manage:2
+4899     INTERGREEN SYSTEM, S.L. (Cliente Baja)        GO!Manage                           GO!Manage:2
+5388     LADRILLERAS IBICENCAS, S.A.                   GO!Manage                           GO!Manage:4
+5438     ENEFLIX, S.L.                                 GO!Manage                           GO!Manage:4
+
+
+
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+  3. REGISTROS DUPLICADOS (mismo código + mismo producto aparece más de una vez)
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+Total: 28 combinaciones duplicadas
+
+Código   Cliente                                       Producto     Veces  Detalle usuarios
+------------------------------------------------------------------------------------------------------------------------
+1903     SUMINISTROS CALEFON, S.L.                     Auna         2      usuarios: [0, 0]
+4034     EXCLUSIVAS ZABALETA, S.A.U.                   Auna         2      usuarios: [0, 0]
+782      ALMACENES ELECTRICOS MADRILEÑOS, S.A.         GO!Manage    2      usuarios: [54, 10]
+1719     SUMINISTROS ELECTRICOS COTO, S.L.             GO!Manage    2      usuarios: [120, 5]
+1819     SOLUCIONES ELECTRICAS MACHADO, S.L.           GO!Manage    2      usuarios: [6, 1]
+1903     SUMINISTROS CALEFON, S.L.                     GO!Manage    2      usuarios: [71, 51]
+2031     MASFARNE CUENCA, S.A.                         GO!Manage    2      usuarios: [30, 21]
+2393     MAQUINARIA DE HOSTELERIA INDUSTRIAL, S.L.     GO!Manage    2      usuarios: [24, 1]
+2401     DISTRIBUCIONES SUNER, S.L.U.                  GO!Manage    3      usuarios: [45, 30, 30]
+2576     TUBESAN, S.L.                                 GO!Manage    2      usuarios: [22, 22]
+2685     ARAIZ SUMN. ELECTRICOS, S.A.U.                GO!Manage    3      usuarios: [1, 158, 5]
+3052     COMPONENTS ELECTRICS GIRONA, S.L.             GO!Manage    2      usuarios: [25, 25]
+3297     DISTRIBUCIONES DIEGUEZ, S.A.                  GO!Manage    2      usuarios: [28, 1]
+3535     TECN. Y SOLUCIONES INDUSTRIALES, S.L.         GO!Manage    2      usuarios: [11, 10]
+3702     SUMN. ELECTRICOS TORRECILLA, S.L.             GO!Manage    2      usuarios: [4, 4]
+3831     COMERFONSA, S.L.                              GO!Manage    2      usuarios: [18, 18]
+3922     DISTRIBUCIONES ENELCA JAEN, S.L.              GO!Manage    2      usuarios: [13, 1]
+3937     ELCOM AIR, S.L.                               GO!Manage    2      usuarios: [33, 33]
+3967     ALBEROLA VERDU, S.L.  (ALVERLAMP)             GO!Manage    2      usuarios: [12, 12]
+4034     EXCLUSIVAS ZABALETA, S.A.U.                   GO!Manage    2      usuarios: [68, 68]
+4227     MERIDA SOLUCIONES ELECTROTECN., S.L.          GO!Manage    2      usuarios: [4, 1]
+4248     ABC GESTIO, S.L.                              GO!Manage    2      usuarios: [176, 25]
+4277     ELECTRO INDUSTRIAL METROPOLITANA, S.L.        GO!Manage    2      usuarios: [18, 1]
+4350     REPRESENTACIONES CALERO, S.L.                 GO!Manage    2      usuarios: [3, 1]
+4667     C&G DOMOTICA ESPAÑA, S.A.                     GO!Manage    2      usuarios: [190, 190]
+5344     TUBAGUA MAS ESPACIO, S.L.                     GO!Manage    2      usuarios: [9, 9]
+3876     COMERCIAL DISBANY 1965, S.L.                  MobileA      2      usuarios: [1, 1]
+5344     TUBAGUA MAS ESPACIO, S.L.                     Obras        2      usuarios: [0, 0]
+
+
+
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+  4. USUARIOS ERP DISTINTOS ENTRE POTENCIAL_CORE Y PESTAÑA GO!MANAGE
+     ¿Cuál es el correcto?
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+Código   Cliente                                       Usrs Potencial_Core  Usrs GO!Manage  Diferencia
+------------------------------------------------------------------------------------------------------------------------
+1368     SUAREP & LLADO, S.A.                          90                   150             -60
+
+
+
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+  5a. CLIENTES EN POTENCIAL_CORE QUE NO APARECEN EN GO!MANAGE
+      (¿deberían estar? ¿son bajas?)
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+Total: 15 clientes
+
+Código   Cliente                                            Usrs ERP   ARR Actual   Es DAM
+------------------------------------------------------------------------------------------------------------------------
+3431     DIEGO DIAZ LOPEZ, S.L.                             44         19735        SÍ
+3602     HIDRO TARRACO, S.A.                                30         5006         NO
+3824     TUVAINSA DISTRIBUIDORA, S.L.                       20         11021        NO
+3892     DAUNIS, S.A.                                       55         14586        NO
+5328     SOLER TESELEN, SL                                  25         10424        NO
+7004     SYG, S.A                                           35         12288        NO
+7010     SUMINISTROS ELECTRICOS GABYL, SA                   313        69258        SÍ
+7016     SOELCA LABORAL, SA                                 19         8588         SÍ
+7017     JOSMAN,SA                                          2          630          NO
+7031     LUJISA, S.A.                                       20         9233         NO
+7039     CISA-ELECTRIC, S.A.                                8          3504         NO
+7051     CAGESA GESTION, S.L.                               135        52854        SÍ
+7079     JAB GESTION DAM, S.L.                              90         59725        SÍ
+7113     ELECTRO MERCANTIL LEGANES DAM, S.L.                109        39883        SÍ
+7130     ASEIN COMERCIALIZACIÓN 1983 SL                     15         9052         NO
+
+
+
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+  5b. CLIENTES EN GO!MANAGE QUE NO APARECEN EN POTENCIAL_CORE
+      (¿faltan en la pestaña principal? ¿son clientes nuevos o dados de baja?)
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+Total: 85 clientes
+
+Código   Nombre (en GO!Manage)                         Producto        Bloq   Partner              Usuarios
+------------------------------------------------------------------------------------------------------------------------
+20       ELEKSA - SUMN. ELECTROMECANICOS (Cliente Baja GEDILPL         No     MICROTECH            8
+137      COELSA                                        GEDADVANCED     No     TELEMATEL            4
+183      BERDIN ALICANTE, S.L. (LUCERO DE LEVANTE) (Cl GEDADVANCED     No     TELEMATEL            50
+216      EBRICO, S.L. (Cliente Baja)                   GEDILPL         No     H.S.B., S.A.         7
+270      MAGAÑA Y MORENO, S.L. (Cliente Baja)          GEDILPL         No     EUROTRONIC CONSULTOR 16
+468      ELECTRO ORENSE, S.L. (Cliente Baja)           GEDADVANCED     No     TELEMATEL            15
+511      COEVA VIC                                     GEDADVANCED     No     TELEMATEL            6
+512      COEVA-TECNICAL GRUP, S.L.                     GEDILPL         No     TELEMATEL            1
+611      DEGRA (Cliente Baja)                          GEDILPL         No     TELEMATEL            1
+642      ELECTRO MERCANTIL GUADALAJARA DAM, S.A.       GEDADVANCED     No     TELEMATEL            7
+677      AIGUA BAIX, S.A. (Cliente Baja)               GEDILPL         No     H.S.B., S.A.         1
+743      SUEPRAT & ALARTE, S.L. (Cliente Baja)         GEDADVANCED     No     TELEMATEL            7
+814      TUDELA PERIBAÑEZ, ANASTASIO (Cliente Baja)    GEDILPL         No     H.S.B., S.A.         1
+870      SILVA Y VILCHES, S.A. (Cliente Baja)          GEDILPL         No     TELEMATEL            13
+1078     DISMEVA VALLADOLID, S.L.U. (Cliente Baja)     GEDADVANCED     No     MICROTECH            10
+1102     BATTANER E HIJOS, S.A. (Cliente Baja)         GEDADVANCED     No     MICROTECH            2
+1387     CINTUL, S.A. (Cliente Baja)                   GEDADVANCED     No     MICROTECH            1
+1464     DAGSA (Cliente Baja)                          GEDILPL         No     H.S.B., S.A.         4
+1695     COMERCIAL LIDER COMP. ELECTRICOS (Cliente Baj GEDILPL         No     H.S.B., S.A.         6
+1850     AEBA (Cliente Baja)                           GEDADVANCED     No     H.S.B., S.A.         4
+1885     JAIME REY E HIJOS, S.L. (Cliente Baja)        GEDILPL         No     TELEMATEL            6
+1952     GRUMELEC, S.L.                                GEDESSENTIAL    No     TELEMATEL            4
+1953     UNITTAS DISTRIBUCION VIRTUAL, S.A. (EX-FINIST GEDADVANCED     No     TELEMATEL            5
+2053     SUMINISTROS SERPIS, S.L. (EX-IME)             GEDADVANCED     No     matmax.es            8
+2129     FILTROS CASTELLO, S.L. (Cliente Baja)         GEDILPL         No     TELEMATEL            7
+2230     GENERAL DE SUMINISTROS FRIGORIFICOS, S.A - GS GEDADVANCED     No     TELEMATEL            8
+2247     ASLAK, S.L. (Cliente Baja)                    GEDILPL         No     H.S.B., S.A.         30
+2302     ALPHALIGHT ESPAÑA, S.A.                       GEDADVANCED     No     MICROTECH            2
+2419     IGEA ILUMINACION, S.L.                        GEDESSENTIAL    No     H.S.B., S.A.         3
+2739     ELECTROMAT BALEAR, S.L.                       GEDILPL         No     matmax.es            5
+2744     ERFRI                                         GEDILPL         No     matmax.es            52
+2838     ACCESORIOS FONTANERIA MORALES, S.L. (Cliente  GEDADVANCED     No     H.S.B., S.A.         4
+3084     AB ELECTRICIDAD, S.L. (Cliente Baja)          GEDADVANCED     No     MICROTECH            23
+3085     DISTRIBUCION DE FRIO HDF, S.L.                GEDILPL         No     TELEMATEL            6
+3134     ALMAGRUPO / AUNA DISTRIBUCION                 GEDADVANCED     No     TELEMATEL            5
+3149     FERINTEGRA '96, S.L. (FERREAL) (Cliente Baja) GEDILPL         No     TELEMATEL            10
+3314     ACTIVIDADES ELECTRICAS BOXTAR, S.L.           GEDADVANCED     No     TELEMATEL            12
+3319     OSMA Y GUERRERO, S.L. (Cliente Baja)          GEDILPL         No     GLOBALIS - ALBACETE  5
+3340     ROALEX SANEHOGAR, S.L.                        GEDADVANCED     No     GLOBALIS - ALBACETE  6
+3382     DISHELEC 65, S.L. (Cliente Baja)              GEDILPL         No     H.S.B., S.A.         3
+3536     LAMPAMAN - CLICLIGHT VILLARROBLEDO (Cliente B GEDILPL         No     GLOBALIS - ALBACETE  5
+3595     AURELIO TORRES, S.L.                          GEDADVANCED     No     TELEMATEL            15
+3717     CABO ELECTRIC, S.L. (Cliente Baja)            GEDILPL         No     MICROTECH            1
+3723     MAT.ELCO.REDES Y TELECOMN., S.L.-MERTEL (Clie GEDILPL         No     TELEMATEL            4
+3788     ALMACENES NARTALLO, S.L. (Cliente Baja)       GEDILPL         No     TELEMATEL            8
+3845     DAP MARESME AUTOMATITZACIO INDUSTRIAL (Client GEDILPL         No     H.S.B., S.A.         4
+3893     SUBECLIMA (Cliente Baja)                      GEDADVANCED     No     MICROTECH            3
+3894     ARADILLA SOLUCIONES INDUSTRIALES, S.L. (Clien GEDESSENTIAL    No     H.S.B., S.A.         3
+3909     SERFONCAL, S.L. (Cliente Baja)                GEDADVANCED     No     TELEMATEL            16
+3923     DISMAELECTRIC, S.L.U. (Cliente Baja)          GEDESSENTIAL    No     TELEMATEL            3
+3927     PROMOSA (Cliente Baja)                        GEDADVANCED     No     TELEMATEL            2
+3967     ALBEROLA VERDU, S.L.  (ALVERLAMP)             GEDADVANCED     No     TELEMATEL            12
+4006     ZELSIA DESARROLLOS INTEGRALES, S.L.U. (Client GEDADVANCED     No     TELEMATEL            6
+4014     COMERCIAL LEITEN PVC, S.C.P. (Cliente Baja)   GEDESSENTIAL    No     H.S.B., S.A.         1
+4018     DISTRIMEL ZARAGOZA, S.L. (Cliente Baja)       GEDADVANCED     No     MICROTECH            1
+4026     KONTROL & LED LIGHTING, S.L. - NORDLED (Clien GEDADVANCED     No     MICROTECH            2
+4031     DEAC SOLUCIONS ENERGETIQUES, S.L. (Cliente Ba GEDADVANCED     No     MICROTECH            9
+4040     SUMSEL GIRONA, S.L. "SUMINISTRES LA SELVA" (C GEDESSENTIAL    No     MICROTECH            3
+4044     PRODELECTRIC, S.L. (Cliente Baja)             GEDADVANCED     No     MICROTECH            1
+4050     FERROCANO, S.L (Cliente Baja)                 GEDADVANCED     No     TELEMATEL            18
+4220     SUMELEC VIZCAYA, S.L. (Cliente Baja)          GEDADVANCED     No     MICROTECH            10
+4237     ALDISOR ELECTRICIDAD, S.L.U. (Cliente Baja)   GEDADVANCED     No     MICROTECH            4
+4241     SYSCLIMA                                      GEDADVANCED     No     TELEMATEL            6
+4255     SAVA, S.L. (Cliente Baja)                     GEDADVANCED     No     MICROTECH            18
+4257     ACCIO INTERMEDIARIA, S.L.U.                   GEDADVANCED     No     TELEMATEL            2
+4269     OLIVE I CAMPANYA, JOAN (Cliente Baja)         GEDADVANCED     No     MICROTECH            1
+4278     REPUESTOS SAT 2014, S.L. (Cliente Baja)       GEDADVANCED     No     TELEMATEL            1
+4285     FERRETERIA DEL AIRE, S.L. (Cliente Baja)      GEDESSENTIAL    No     TELEMATEL            6
+4292     PIRINENCA SERVEI ELECTRIC, S.L.               GEDADVANCED     No     matmax.es            6
+4300     SUMRAS 2010, S.L. (Cliente Baja)              GEDADVANCED     No     MICROTECH            7
+4305     LOSIGAS (Cliente Baja)                        GEDESSENTIAL    No     H.S.B., S.A.         3
+4306     PRATS CLAPES, S.L. (Cliente Baja)             GEDESSENTIAL    No     HSB Ibiza            2
+4318     MITSUCO AC SPAIN, S.A. (Cliente Baja)         GEDADVANCED     No     TELEMATEL            1
+4329     PLADEX IBERIA, S.L.                           GEDESSENTIAL    No     TELEMATEL            2
+4330     PILIGHT SHOP, S.L.                            GEDADVANCED     No     MICROTECH            5
+4375     AUTOMOCION ISLA, S.A. (Cliente Baja)          GEDESSENTIAL    No     MICROTECH            4
+4380     AMBAR PROJECTES I INSTAL·LACIONS, S.L.U. (Cli GEDESSENTIAL    No     H.S.B., S.A.         1
+4488     M.I.G.E.S.A., S.L.L.- MIGESA (Cliente Baja)   GEDESSENTIAL    No     H.S.B., S.A.         1
+4592     ALMACEN CENTRAL COMPRAS ELECTRICAS "SERRATO"  GEDADVANCED     No     TELEMATEL            1
+4645     TECNICAL VIC, S.L. (Cliente Baja)             GEDILPL         No     H.S.B., S.A.         1
+4748     FIT-3, S.L.                                   GEDADVANCED     No     TELEMATEL            1
+4788     ISA DATA, S.L. (Cliente Baja)                 GEDADVANCED     No     TELEMATEL            2
+4899     INTERGREEN SYSTEM, S.L. (Cliente Baja)        GEDADVANCED     No     TELEMATEL            2
+5388     LADRILLERAS IBICENCAS, S.A.                   GEDESSENTIAL    No     MICROTECH            4
+5438     ENEFLIX, S.L.                                 GEDADVANCED     No     TELEMATEL            4
+
+
+
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+  6. PARTNER DIFERENTE ENTRE POTENCIAL_CORE Y PESTAÑAS SATÉLITE
+     (Potencial_Core pone nombre genérico, satélites ponen nombre con zona)
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+Total: 109 clientes con partner diferente
+
+Código   Cliente                                  Partner Potencial_Core Partner en Satélites
+------------------------------------------------------------------------------------------------------------------------
+155      SUMN. ELECTRICOS JARAMA, S.L.            TELEMATEL              TELEMATEL - MADRID
+284      ELECTRO AVILES, S.L.                     MICROTECH              MICROTECH - GALICIA
+398      MAPRISE, S.L.                            MICROTECH              MICROTECH - GALICIA
+630      SAMATEL RIOJA, S.A.                      MICROTECH              MICROTECH - NORTE
+680      ELECTRICIDAD PRINCIPADO, S.L.            MICROTECH              MICROTECH - GALICIA
+782      ALMACENES ELECTRICOS MADRILEÑOS, S.A.    TELEMATEL              TELEMATEL - MADRID
+837      JAEN MATERIAL ELECTRICO, S.L.            TELEMATEL              TELEMATEL - LEVANTE
+978      VENTA MATERIAL ELECTRICO, S.A.           TELEMATEL              TELEMATEL - SUR
+1062     SUMINISTROS ALCOSAN, S.L.                TELEMATEL              TELEMATEL - MADRID
+1091     GOIKO-LUZ, S.L.                          MICROTECH              MICROTECH - NORTE
+1379     SUMINISTROS ELECTRICOS LUSER, S.L.       TELEMATEL              TELEMATEL - LEVANTE
+1420     ELECTRICIDAD NESTOR OSES, S.A.           MICROTECH              MICROTECH - NORTE
+1542     GARCIA BEDMAR E HIJOS, S.L.              TELEMATEL              TELEMATEL - SUR
+1586     ELECTROINDEL, S.L.                       TELEMATEL              TELEMATEL - LEVANTE
+1634     SUMN. ELECTRICOS EXTREMEÑOS, S.A.        TELEMATEL              TELEMATEL - EXTREMADURA
+1639     GUARCONSA, S.A.                          TELEMATEL              TELEMATEL - MADRID
+1645     GUIJARRO HERMANOS, S.L.                  TELEMATEL              TELEMATEL - MADRID
+1719     SUMINISTROS ELECTRICOS COTO, S.L.        TELEMATEL              TELEMATEL - SUR
+1728     ANDALUZA DE SUMN. ELCOS. E IND., S.A.    TELEMATEL              TELEMATEL - SUR
+1874     ELECTROMAIN ELECTRONICA INDUSTRIAL, S.L. TELEMATEL              TELEMATEL - LEVANTE
+1901     ARISTOS INDUSTRIAL, S.L.                 TELEMATEL              TELEMATEL - MADRID
+1903     SUMINISTROS CALEFON, S.L.                MICROTECH              MICROTECH - GALICIA
+2026     SUMELGRA MEDIA TENSION, S.L.             TELEMATEL              TELEMATEL - SUR
+2031     MASFARNE CUENCA, S.A.                    TELEMATEL              TELEMATEL - LEVANTE
+2100     ONULEC, S.L.                             TELEMATEL              TELEMATEL - SUR
+2119     BALEAR DE SUMN. FRIGORIFICOS, S.A.       MICROTECH              MICROTECH - BALEARES
+2138     COMERCIAL ELECTRICA COELECTRIC, S.L.     TELEMATEL              TELEMATEL - LEVANTE
+2258     SUMN. ELCOS. CORDOBESES, S.A.            TELEMATEL              TELEMATEL - SUR
+2289     ELECTRO TESLA ALICANTE, S.A.             TELEMATEL              TELEMATEL - LEVANTE
+2318     TECNALUM ELECTRICIDAD, S.L.              TELEMATEL              TELEMATEL - MADRID
+2360     COLECTIVO DISTRIMEL A.I.E.               MICROTECH              MICROTECH - NORTE
+2375     ALBA DISMELEC, S.L.                      MICROTECH              MICROTECH - NORTE
+2425     SANEHOGAR, S.A.                          TELEMATEL              TELEMATEL - MADRID
+2429     ALMACENES ELECTRICOS RAMIREZ, S.L.       TELEMATEL              TELEMATEL - NOROESTE
+2452     SUMINISTROS Y CALEFACCION 2000, S.L.     TELEMATEL              TELEMATEL - MADRID
+2473     SUMINISTROS ELECTRICOS ESSAN, S.L.       TELEMATEL              TELEMATEL - MADRID
+2549     COMP. ELCOS. MONTAÑESES, S.A.            TELEMATEL              TELEMATEL - NOROESTE
+2572     DISTRIBUCIONES C. CASAMAYOR, S.L.        TELEMATEL              TELEMATEL - MADRID
+2576     TUBESAN, S.L.                            TELEMATEL              TELEMATEL - SUR
+2641     MELCHOR HERNANDEZ CABRERA, S.A.          MICROTECH              MICROTECH - CANARIAS
+2743     AISLAM. ACUSTICOS DE LEVANTE, S.L.       TELEMATEL              TELEMATEL - LEVANTE
+2827     CAIRO, S.L.U.                            TELEMATEL              XAVIER FERICLE ALBIOL
+2933     SANEAMIENTOS EMILIO HERNANDEZ, S.A.      TELEMATEL              TELEMATEL - SUR
+2960     SOLUCIONES TECNICAS MTECH, S.L.          TELEMATEL              TELEMATEL - MADRID
+3006     JOSE ABAD COMERCIAL DEL COBRE, S.A.      TELEMATEL              TELEMATEL - MADRID
+3111     UTREMEL-UTRERA, S.L.                     TELEMATEL              TELEMATEL - SUR
+3170     FANAIR, S.L.                             MICROTECH              MICROTECH - NORTE
+3294     COMERCIAL ROFER, S.L.                    MICROTECH              MICROTECH - CANARIAS
+3295     ZAMATEL 2006, S.L.                       MICROTECH              MICROTECH - NORTE
+3297     DISTRIBUCIONES DIEGUEZ, S.A.             MICROTECH              MICROTECH - NORTE
+3337     SUMELER LEON, S.L.L.                     MICROTECH              MICROTECH - NORTE
+3485     ELEKTROKAMYR, S.L.L.                     TELEMATEL              TELEMATEL - SUR
+3548     MADI CONTROL, S.L.                       TELEMATEL              TELEMATEL - SUR
+3615     GRUPO RIAS MADRID, S.L.                  TELEMATEL              TELEMATEL - MADRID
+3665     ZABALETA ASTURIAS, S.A.U.                MICROTECH              MICROTECH - NORTE
+3716     SUMN. ELCOS. TORREVIEJA, S.L.            TELEMATEL              TELEMATEL - LEVANTE
+3738     SANEAMIENTOS GARRY, S.L.                 TELEMATEL              TELEMATEL - MADRID
+3741     TECNOLOGIA TERMICA, S.A.                 TELEMATEL              TELEMATEL - MADRID
+3745     UNION FERRETERA ASTUR, S.L.              MICROTECH              MICROTECH - GALICIA
+3818     REGEL SUMINISTROS Y PROYECTOS, S.L.U.    MICROTECH              MICROTECH - NORTE
+3831     COMERFONSA, S.L.                         TELEMATEL              TELEMATEL - LEVANTE
+3838     ANTONIO CABOT FORNES, S.A.               MICROTECH              MICROTECH - BALEARES
+3841     LOPEZ MENGUAL SUMN. ELCOS., S.L.         TELEMATEL              TELEMATEL - LEVANTE
+3848     KRUGER TECHNOLOGY, S.L.                  MICROTECH              MICROTECH - NORTE
+3865     NAVARRO APLIC. TERMICAS E HIDRAULICAS, S MICROTECH              MICROTECH - NORTE
+3878     SUMINISTROS Y SERVICIOS F.R.Y., S.L.     TELEMATEL              TELEMATEL - MADRID
+3879     RANDE SUMINISTROS, S.L.L.                MICROTECH              MICROTECH - GALICIA
+3913     DIMAEL CASTELLON, S.L.                   TELEMATEL              TELEMATEL - LEVANTE
+4000     ELECTRISOL CANARIAS, S.L.                MICROTECH              MICROTECH - CANARIAS
+4004     MIGAL FONQUIVIR, S.L.                    TELEMATEL              TELEMATEL - SUR
+4017     RODRIGUEZ VALERO FRANCISCO, S.L.         TELEMATEL              TELEMATEL - LEVANTE
+4023     FONTIA SUMINISTROS, S.L.                 TELEMATEL              TELEMATEL - SUR
+4032     SUMN. Y AUTOM. SIP LASER, S.A.           TELEMATEL              TELEMATEL - LEVANTE
+4034     EXCLUSIVAS ZABALETA, S.A.U.              MICROTECH              MICROTECH - NORTE
+4048     BEFE AUTOMATISMOS, S.L.                  TELEMATEL              TELEMATEL - LEVANTE
+4051     ONELEC SUMINISTROS ELECTRICOS, S.L.      TELEMATEL              TELEMATEL - MADRID
+4057     PROGASCA, S.L.                           TELEMATEL              TELEMATEL - NOROESTE
+4249     MATERIALES DE CONST. SERRANO, S.A.       TELEMATEL              TELEMATEL - SUR
+4265     FIT ENERGY, S.L.                         TELEMATEL              TELEMATEL - MADRID
+4277     ELECTRO INDUSTRIAL METROPOLITANA, S.L.   TELEMATEL              TELEMATEL - MADRID
+4279     ARAMBURU GUZMAN, S.L.                    TELEMATEL              TELEMATEL - SUR
+4280     ESFER SUMINISTROS 2012, S.L.             TELEMATEL              TELEMATEL - MADRID
+4308     VENTA ESP. DE MATERIAL ELECTRICO, S.L.   TELEMATEL              TELEMATEL - EXTREMADURA
+4314     FONT. Y CALEFACCION CASPER, S.L.         TELEMATEL              TELEMATEL - MADRID
+4341     ELECTRO VIZCAYA, S.A.                    MICROTECH              MICROTECH - NORTE
+4358     SUMINISTROS BERMUDEZ ULLOA, S.L.         MICROTECH              MICROTECH - GALICIA
+4368     SIRKUS SISTEMAS DE TIENDAS, S.L.         TELEMATEL              TELEMATEL - MADRID
+4432     INSTALADORA SUAREZ, S.L.                 MICROTECH              MICROTECH - CANARIAS
+4478     HIDROKALOR CANARIAS, S.A.                TELEMATEL              TELEMATEL - CANARIAS
+4546     VALVULERIA Y SANEAMIENTOS, S.L.          TELEMATEL              TELEMATEL - SUR
+4564     SUMINISTROS GONZALEZ E HIJOS, S.L.       TELEMATEL              TELEMATEL - LEVANTE
+4573     TERMOGAMA, S.L.                          TELEMATEL              TELEMATEL - LEVANTE
+4584     MATERIALES ELECTRICOS ALCORCON, S.A.     TELEMATEL              TELEMATEL - MADRID
+4790     SUMINISTROS ELECTRICOS HUESCA, S.L.      TELEMATEL              TELEMATEL - MADRID
+4804     SANEAMIENTOS SAN IGNACIO, S.A.           MICROTECH              MICROTECH - NORTE
+4986     VENTAIR DISTRIBUCION, S.L.               TELEMATEL              TELEMATEL - NOROESTE
+4995     ELECTROBABEL, S.L.                       TELEMATEL              TELEMATEL - LEVANTE
+5013     SUMELECO, S.L.                           TELEMATEL              TELEMATEL - LEVANTE
+5065     AISLAMIENTOS ISOLAIS, S.L.               TELEMATEL              TELEMATEL - SUR
+5227     SUMINISTROS BEROTZA, S.L.U.              TELEMATEL              TELEMATEL - MADRID
+5296     MATERIALES DE CONST. DIEGO CABRERA, S.L. TELEMATEL              TELEMATEL - LEVANTE
+5325     MACINFOR ANDALUCIA, S.L.                 TELEMATEL              TELEMATEL - SUR
+5334     SUMINISTROS LA MURALLA, S.L.             TELEMATEL              TELEMATEL - SUR
+5341     INOXIDABLES DE MOLINA, S.L.              TELEMATEL              TELEMATEL - LEVANTE
+5344     TUBAGUA MAS ESPACIO, S.L.                MICROTECH              MICROTECH - BALEARES
+5365     COMERCIAL POLO DOÑORO, S.L.              TELEMATEL              TELEMATEL - MADRID
+5373     ABRIL SOLUCIONES, S.L.                   TELEMATEL              TELEMATEL - MADRID
+5449     ELECT.Y CLIMAT.MENGIBAR, S.L.            TELEMATEL              TELEMATEL - MADRID
+5459     COMERCIAL DE FONTANERIA BBC, S.R.L.L.    TELEMATEL              TELEMATEL - LEVANTE
+
+
+========================================================================================================================
+FIN DEL INFORME
+========================================================================================================================

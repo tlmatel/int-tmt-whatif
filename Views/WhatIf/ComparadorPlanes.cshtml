@@ -1,0 +1,379 @@
+@{
+    ViewData["Title"] = "Comparador de Planes";
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Dashboard">Inicio</a></li>
+            <li class="breadcrumb-item"><a asp-action="PlanMigracion">Plan Migración</a></li>
+            <li class="breadcrumb-item active">Comparador</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-2"><i class="bi bi-bar-chart-line"></i> Comparador de Planes de Migración</h1>
+    <p class="text-muted mb-4">
+        Selecciona varios planes guardados y compara cómo evoluciona el ARR acumulado mes a mes en cada escenario.
+    </p>
+
+    <!-- Aviso: sin planes -->
+    <div class="alert alert-warning d-none" id="alert-no-plans">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>No hay planes guardados.</strong>
+        Ve al <a asp-action="PlanMigracion" class="alert-link">Plan de Migración</a>, configura y guarda al menos dos planes para poder compararlos.
+    </div>
+
+    <!-- Selector de planes -->
+    <div class="card mb-4 border-2 border-dark" id="selector-card">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-list-check"></i> <strong>Planes a comparar</strong></span>
+            <small class="text-white-50" id="sel-count">0 seleccionados</small>
+        </div>
+        <div class="card-body py-2">
+            <div id="plan-checkboxes" class="row g-2"></div>
+        </div>
+    </div>
+
+    <!-- Gráfico comparativo principal -->
+    <div class="card mb-4 border-2 border-primary">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-graph-up-arrow"></i> <strong>ARR Acumulado — Comparativa por Plan</strong>
+        </div>
+        <div class="card-body py-2">
+            <canvas id="chart-compare" height="85"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráfico delta -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-plus-slash-minus"></i> <strong>Delta Acumulado vs ARR Actual</strong>
+            <small class="text-muted ms-2">Ganancia neta sobre lo que cobras hoy</small>
+        </div>
+        <div class="card-body py-2">
+            <canvas id="chart-delta" height="65"></canvas>
+        </div>
+    </div>
+
+    <!-- Tabla resumen -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-table"></i> <strong>Resumen por Plan</strong>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Plan</th>
+                            <th>Simulación</th>
+                            <th class="text-end">Capacidad</th>
+                            <th class="text-center">Filtros</th>
+                            <th class="text-end">Clientes</th>
+                            <th class="text-end">Usuarios</th>
+                            <th class="text-end">Meses</th>
+                            <th class="text-end">ARR Actual</th>
+                            <th class="text-end text-success fw-bold">ARR Nuevo</th>
+                            <th class="text-end">Delta</th>
+                            <th class="text-end">Delta %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summary-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    var DB = @Html.Raw(ViewBag.DataJson);
+
+    function fmt(n) { return Math.round(n).toLocaleString('es-ES'); }
+    function fmtM(v) { return (v / 1e6).toFixed(2) + 'M€'; }
+    function fmtK(v) { return v >= 1000000 ? (v / 1e6).toFixed(1) + 'M€' : v >= 1000 ? (v / 1000).toFixed(0) + 'k€' : fmt(v) + '€'; }
+
+    var COLORS = ['#0d6efd','#198754','#dc3545','#fd7e14','#6f42c1','#20c997','#d63384','#ffc107','#0dcaf0','#6c757d'];
+
+    function parseJson(item) {
+        try { return typeof item.stateJson === 'string' ? JSON.parse(item.stateJson) : item.stateJson; } catch(e) { return {}; }
+    }
+
+    var plans = [];
+    var simulations = [];
+
+    async function initData() {
+        try {
+            var [plansResp, simsResp] = await Promise.all([
+                fetch('/api/plans'),
+                fetch('/api/simulations')
+            ]);
+            if (plansResp.ok) plans = await plansResp.json();
+            if (simsResp.ok) simulations = await simsResp.json();
+        } catch(e) {}
+
+        if (plans.length === 0) {
+            document.getElementById('alert-no-plans').classList.remove('d-none');
+            document.getElementById('selector-card').classList.add('d-none');
+            return;
+        }
+
+        buildUI();
+    }
+
+    var clientMap = {};
+    DB.clients.forEach(function(c) { clientMap[c.code] = c; });
+
+    function getSimulation(simId) {
+        var found = simulations.find(function(s) { return s.id == simId; });
+        return found ? parseJson(found) : null;
+    }
+
+    function getSimTitle(simId) {
+        var s = simulations.find(function(x) { return x.id == simId; });
+        return s ? s.title : '?';
+    }
+
+    function computePlan(plan) {
+        var sim = getSimulation(plan.simId);
+        if (!sim || !sim.clientResults) return null;
+
+        var clients = sim.clientResults
+            .filter(function(sc) { return !sc.excluded; })
+            .map(function(sc) {
+                var dc = clientMap[sc.code] || {};
+                return {
+                    code: sc.code, usersErp: sc.usersErp, isDam: sc.isDam,
+                    arrActual: sc.arrActual, finalArr: sc.finalArr,
+                    satCount: dc.satCount || 0
+                };
+            });
+
+        // Apply plan filters
+        var filtered = clients.filter(function(c) {
+            if (plan.filterNoSat && c.satCount > 0) return false;
+            if (plan.filterNoDam && c.isDam) return false;
+            if (plan.filterMaxUsers && c.usersErp > plan.filterMaxUsers) return false;
+            return true;
+        });
+
+        // Prioritize
+        filtered.sort(function(a, b) {
+            if (a.isDam !== b.isDam) return a.isDam ? 1 : -1;
+            if (a.satCount !== b.satCount) return a.satCount - b.satCount;
+            return a.usersErp - b.usersErp;
+        });
+
+        var capacity = plan.capacity || 5;
+        var totalMonths = Math.ceil(filtered.length / capacity) || 0;
+        var months = [];
+        var cumArr = 0, cumActual = 0;
+
+        for (var m = 0; m < totalMonths; m++) {
+            var start = m * capacity;
+            var end = Math.min(start + capacity, filtered.length);
+            for (var i = start; i < end; i++) {
+                cumArr += filtered[i].finalArr;
+                cumActual += filtered[i].arrActual;
+            }
+            months.push({ month: m + 1, cumulativeArr: cumArr, cumulativeActual: cumActual });
+        }
+
+        var totalUsers = filtered.reduce(function(s, c) { return s + c.usersErp; }, 0);
+
+        return {
+            title: plan.title,
+            simTitle: getSimTitle(plan.simId),
+            capacity: capacity,
+            filterNoSat: plan.filterNoSat,
+            filterNoDam: plan.filterNoDam,
+            filterMaxUsers: plan.filterMaxUsers,
+            clientCount: filtered.length,
+            totalUsers: totalUsers,
+            totalMonths: totalMonths,
+            totalArrActual: cumActual,
+            totalArrNew: cumArr,
+            delta: cumArr - cumActual,
+            months: months
+        };
+    }
+
+    function buildUI() {
+        var cbHtml = '';
+        plans.forEach(function(p, i) {
+            var d = new Date(p.updatedAt);
+            var color = COLORS[i % COLORS.length];
+            cbHtml += '<div class="col-md-3 col-lg-2">'
+                + '<div class="form-check">'
+                + '<input class="form-check-input plan-check" type="checkbox" id="plan-' + i + '" data-idx="' + i + '" '
+                + 'style="border-color:' + color + '" checked>'
+                + '<label class="form-check-label" for="plan-' + i + '">'
+                + '<span class="fw-bold" style="color:' + color + '">' + p.title + '</span>'
+                + '<br><small class="text-muted">' + d.toLocaleDateString('es-ES') + '</small>'
+                + '</label></div></div>';
+        });
+        document.getElementById('plan-checkboxes').innerHTML = cbHtml;
+
+        document.querySelectorAll('.plan-check').forEach(function(cb) {
+            cb.addEventListener('change', render);
+        });
+
+        render();
+    }
+
+    var chartCompare = null, chartDelta = null;
+
+    function render() {
+        var selected = [];
+        document.querySelectorAll('.plan-check').forEach(function(cb) {
+            if (cb.checked) selected.push(parseInt(cb.dataset.idx));
+        });
+        document.getElementById('sel-count').textContent = selected.length + ' seleccionados';
+
+        var results = [];
+        selected.forEach(function(idx) {
+            var planState = parseJson(plans[idx]);
+            planState.title = plans[idx].title;
+            var computed = computePlan(planState);
+            if (computed) {
+                computed.color = COLORS[idx % COLORS.length];
+                results.push(computed);
+            }
+        });
+
+        renderCharts(results);
+        renderSummary(results);
+    }
+
+    function renderCharts(results) {
+        // Find max months across all plans
+        var maxMonths = 0;
+        results.forEach(function(r) { if (r.totalMonths > maxMonths) maxMonths = r.totalMonths; });
+        var labels = [];
+        for (var i = 1; i <= maxMonths; i++) labels.push('Mes ' + i);
+
+        // ARR Acumulado chart
+        var datasets = results.map(function(r) {
+            var data = [];
+            for (var m = 1; m <= maxMonths; m++) {
+                var found = r.months.find(function(x) { return x.month === m; });
+                if (found) {
+                    data.push(Math.round(found.cumulativeArr));
+                } else if (m > r.totalMonths) {
+                    data.push(Math.round(r.totalArrNew));
+                } else {
+                    data.push(null);
+                }
+            }
+            return {
+                label: r.title,
+                data: data,
+                borderColor: r.color,
+                backgroundColor: r.color + '18',
+                fill: false,
+                tension: 0.3,
+                pointRadius: 3,
+                borderWidth: 2.5
+            };
+        });
+
+        if (chartCompare) chartCompare.destroy();
+        chartCompare = new Chart(document.getElementById('chart-compare'), {
+            type: 'line',
+            data: { labels: labels, datasets: datasets },
+            options: {
+                responsive: true,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + fmt(ctx.raw) + ' €'; } } }
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: 'ARR Acumulado (€/año)' },
+                        ticks: { callback: function(v) { return fmtK(v); } }
+                    }
+                }
+            }
+        });
+
+        // Delta chart
+        var deltaDatasets = results.map(function(r) {
+            var data = [];
+            for (var m = 1; m <= maxMonths; m++) {
+                var found = r.months.find(function(x) { return x.month === m; });
+                if (found) {
+                    data.push(Math.round(found.cumulativeArr - found.cumulativeActual));
+                } else if (m > r.totalMonths) {
+                    data.push(Math.round(r.delta));
+                } else {
+                    data.push(null);
+                }
+            }
+            return {
+                label: r.title,
+                data: data,
+                borderColor: r.color,
+                backgroundColor: r.color + '25',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+                borderWidth: 2
+            };
+        });
+
+        if (chartDelta) chartDelta.destroy();
+        chartDelta = new Chart(document.getElementById('chart-delta'), {
+            type: 'line',
+            data: { labels: labels, datasets: deltaDatasets },
+            options: {
+                responsive: true,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + (ctx.raw >= 0 ? '+' : '') + fmt(ctx.raw) + ' €'; } } }
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: 'Delta vs ARR Actual (€/año)' },
+                        ticks: { callback: function(v) { return (v >= 0 ? '+' : '') + fmtK(v); } }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderSummary(results) {
+        var html = '';
+        results.forEach(function(r) {
+            var deltaPct = r.totalArrActual > 0 ? ((r.delta / r.totalArrActual) * 100).toFixed(1) : 0;
+            var deltaClass = r.delta >= 0 ? 'text-success' : 'text-danger';
+            var filters = [];
+            if (r.filterNoSat) filters.push('Sin sat.');
+            if (r.filterNoDam) filters.push('Sin DAM');
+            if (r.filterMaxUsers && r.filterMaxUsers < 500) filters.push('≤' + r.filterMaxUsers + ' usrs');
+            if (filters.length === 0) filters.push('Ninguno');
+
+            html += '<tr>'
+                + '<td><span class="fw-bold" style="color:' + r.color + '"><i class="bi bi-circle-fill me-1" style="font-size:0.6rem"></i>' + r.title + '</span></td>'
+                + '<td><small>' + r.simTitle + '</small></td>'
+                + '<td class="text-end">' + r.capacity + ' cl/mes</td>'
+                + '<td class="text-center"><small>' + filters.join(', ') + '</small></td>'
+                + '<td class="text-end">' + r.clientCount + '</td>'
+                + '<td class="text-end">' + fmt(r.totalUsers) + '</td>'
+                + '<td class="text-end">' + r.totalMonths + '</td>'
+                + '<td class="text-end">' + fmt(r.totalArrActual) + ' €</td>'
+                + '<td class="text-end text-success fw-bold">' + fmt(r.totalArrNew) + ' €</td>'
+                + '<td class="text-end ' + deltaClass + ' fw-bold">' + (r.delta >= 0 ? '+' : '') + fmt(r.delta) + ' €</td>'
+                + '<td class="text-end ' + deltaClass + '">' + (r.delta >= 0 ? '+' : '') + deltaPct + '%</td>'
+                + '</tr>';
+        });
+        document.getElementById('summary-table').innerHTML = html;
+    }
+
+    initData();
+})();
+</script>
+}

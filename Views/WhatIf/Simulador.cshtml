@@ -1,0 +1,1205 @@
+@{
+    ViewData["Title"] = "Simulador de Migración";
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item active">Simulador</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-2"><i class="bi bi-calculator"></i> Simulador de Migración a Core SaaS</h1>
+    <p class="text-muted mb-3">
+        Ajusta las tarifas y observa cómo se acumula el ARR cliente a cliente.
+        Contrasta con el gasto de hardware actual para argumentar la migración.
+    </p>
+
+    <!-- Barra Guardar / Cargar Simulación -->
+    <div class="card mb-4 border-2 border-dark">
+        <div class="card-body py-2">
+            <div class="row align-items-center g-2">
+                <div class="col-auto">
+                    <i class="bi bi-save fs-5"></i>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control form-control-sm" id="sim-title" placeholder="Nombre de la simulación...">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-dark" id="btn-save-sim">
+                        <i class="bi bi-save"></i> Guardar nueva
+                    </button>
+                    <button class="btn btn-sm btn-success d-none" id="btn-overwrite-sim">
+                        <i class="bi bi-save-fill"></i> Guardar actual
+                    </button>
+                </div>
+                <div class="col-auto border-start ps-3">
+                    <i class="bi bi-folder-open fs-5"></i>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select form-select-sm" id="sel-simulations">
+                        <option value="">— Seleccionar simulación —</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-outline-primary" id="btn-load-sim">
+                        <i class="bi bi-box-arrow-in-down"></i> Cargar
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" id="btn-delete-sim">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="col-auto ms-auto">
+                    <small class="text-muted" id="sim-status"></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white text-center h-100 border-3">
+                <div class="card-body p-2">
+                    <small>ARR Actual (OnPremise)</small>
+                    <h3 id="kpi-actual" class="mb-0">—</h3>
+                    <small id="kpi-actual-detail">—</small>
+                    <div class="mt-1"><small class="opacity-75">Lo que cobras hoy a todos los clientes</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-primary text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>ARR Core SaaS</small>
+                    <h4 id="kpi-core">—</h4>
+                    <small class="opacity-75">Ingresos con nueva tarifa</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-success text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>ARR Satélites</small>
+                    <h4 id="kpi-sat">—</h4>
+                    <small class="opacity-75">Extra por módulos adicionales</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-dark text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>ARR Total Nuevo</small>
+                    <h4 id="kpi-total">—</h4>
+                    <small class="opacity-75">Core + Satélites con dto.</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-info text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>Ahorro Infra</small>
+                    <h4 id="kpi-infra">—</h4>
+                    <small class="opacity-75">HW que el cliente deja de pagar</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-warning text-dark text-center h-100">
+                <div class="card-body p-2">
+                    <small>vs OnPremise</small>
+                    <h4 id="kpi-delta">—</h4>
+                    <small>% que ganas vs lo que cobras hoy</small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card bg-secondary text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>Argumento Medio</small>
+                    <h4 id="kpi-argument">—</h4>
+                    <small class="opacity-75">Ahorro medio por cliente</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles What-If globales -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card h-100 border-2 border-danger">
+                <div class="card-header bg-danger text-white d-flex align-items-center">
+                    <i class="bi bi-percent me-2"></i>
+                    <strong>Descuento Comercial</strong>
+                    <span class="ms-3 badge bg-light text-dark fs-6" id="val-margin">0%</span>
+                </div>
+                <div class="card-body py-2">
+                    <small class="text-muted d-block mb-1">Rebaja que ofrecemos al cliente sobre el precio lista</small>
+                    <input type="range" class="form-range" id="rate-margin" min="0" max="50" step="1" value="0">
+                    <div class="d-flex justify-content-between">
+                        <small>0% (precio lista)</small>
+                        <small>50% (máx.)</small>
+                    </div>
+                    <div class="d-flex gap-4 mt-2">
+                        <div><small class="text-muted">Precio medio sin dto.:</small> <strong id="margin-list">65€</strong>/usr/mes</div>
+                        <div><small class="text-muted">Precio medio con dto.:</small> <strong class="text-success" id="margin-final">65€</strong>/usr/mes</div>
+                        <div><small class="text-muted">Impacto:</small> <strong class="text-danger" id="margin-impact">0€</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border-2 border-warning">
+                <div class="card-header bg-warning text-dark d-flex align-items-center">
+                    <i class="bi bi-graph-up-arrow me-2"></i>
+                    <strong>Incremento ARR objetivo</strong>
+                    <span class="ms-3 badge bg-dark text-white fs-6" id="val-increment">0%</span>
+                </div>
+                <div class="card-body py-2">
+                    <small class="text-muted d-block mb-1">% que queremos ganar de más sobre el ARR actual del cliente</small>
+                    <input type="range" class="form-range" id="rate-increment" min="0" max="200" step="5" value="0">
+                    <div class="d-flex justify-content-between">
+                        <small>0% (mismo ARR)</small>
+                        <small>200% (triple)</small>
+                    </div>
+                    <div class="d-flex gap-4 mt-2">
+                        <div><small class="text-muted">ARR actual total:</small> <strong id="increment-actual">—</strong></div>
+                        <div><small class="text-muted">ARR objetivo:</small> <strong class="text-warning" id="increment-target">—</strong></div>
+                        <div><small class="text-muted">Δ:</small> <strong class="text-success" id="increment-delta">—</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sliders -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-sliders"></i> Tarifa GO!Manage (ERP) — Escalado por Usuarios
+                </div>
+                <div class="card-body p-2">
+                    <p class="small text-muted mb-2" id="lbl-summary">—</p>
+                    <table class="table table-sm table-bordered mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Rango</th>
+                                <th class="text-center">Estándar<br><small class="fw-normal">€/usr/mes</small></th>
+                                <th class="text-center">DAM<br><small class="fw-normal">€/usr/mes</small></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tier-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-puzzle"></i> Tarifas Satélites (por usuario)
+                </div>
+                <div class="card-body">
+                    <div class="row g-3" id="sat-sliders"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-hdd-rack"></i> Simulación Coste Infraestructura
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-2" id="infra-info">—</p>
+                    <label class="form-label fw-bold">Coste estimado por usuario/año <span class="badge bg-warning text-dark">SIM</span></label>
+                    <input type="range" class="form-range" id="rate-infra" min="100" max="1200" step="10" value="460">
+                    <div class="d-flex justify-content-between">
+                        <small>100€</small>
+                        <span class="badge bg-info" id="val-infra">460 €/usr/año</span>
+                        <small>1200€</small>
+                    </div>
+                    <small class="text-muted">Se aplica solo a clientes sin dato real de infra.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Tabla de clientes -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span><i class="bi bi-table"></i> Detalle por Cliente — Argumento de Venta</span>
+                <div>
+                    <input type="text" class="form-control form-control-sm d-inline-block" style="width:200px" id="filter-search" placeholder="Buscar cliente...">
+                </div>
+            </div>
+            <div class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label small mb-0 fw-bold">Partner</label>
+                    <select class="form-select form-select-sm" style="width:160px" id="filter-partner">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-0 fw-bold">Satélites</label>
+                    <select class="form-select form-select-sm" style="width:160px" id="filter-sat">
+                        <option value="">Todos</option>
+                        <option value="none">Sin satélites</option>
+                        <option value="any">Con satélites</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-0 fw-bold">Usuarios</label>
+                    <div class="d-flex gap-1 align-items-center">
+                        <input type="number" class="form-control form-control-sm" style="width:70px" id="filter-usr-min" placeholder="Min" min="0">
+                        <span class="text-muted">—</span>
+                        <input type="number" class="form-control form-control-sm" style="width:70px" id="filter-usr-max" placeholder="Max" min="0">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-0 fw-bold">ARR Actual (€)</label>
+                    <div class="d-flex gap-1 align-items-center">
+                        <input type="number" class="form-control form-control-sm" style="width:90px" id="filter-arr-min" placeholder="Min" min="0" step="1000">
+                        <span class="text-muted">—</span>
+                        <input type="number" class="form-control form-control-sm" style="width:90px" id="filter-arr-max" placeholder="Max" min="0" step="1000">
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-outline-secondary" id="btn-clear-filters" title="Limpiar filtros">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                </div>
+                <div class="col-auto ms-auto">
+                    <small class="text-muted" id="filter-count"></small>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover table-striped mb-0" style="width:100%">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th class="text-center" style="width:30px"><input type="checkbox" class="form-check-input" id="chk-all" checked title="Seleccionar/deseleccionar todos"></th>
+                            <th class="sortable" data-col="code">Cód. <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable" data-col="name">Cliente <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable" data-col="partner">Partner <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable text-end" data-col="usersErp">Usrs <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable text-end" data-col="arrActual">ARR Actual<br><small>(OnPremise)</small> <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable text-end" data-col="listArr">ARR Lista<br><small>(sin dto.)</small> <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="text-center">Dto.%<br><small>(editable)</small></th>
+                            <th class="sortable text-end text-success" data-col="finalArr">ARR Final<br><small>(con dto.)</small> <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable text-end" data-col="discount">Rebaja<br><small>(€)</small> <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable text-end" data-col="infraCost">Coste Infra<br><small>(ahorro)</small> <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable text-end fw-bold" data-col="argument">Argumento<br><small>(ahorro total)</small> <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="sortable text-end" data-col="sobrecoste">Δ ARR<br><small>(€)</small> <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                            <th class="text-center">Δ%<br><small>(editable)</small></th>
+                            <th class="sortable" data-col="satCount">Satélites <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="client-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Bridge -->
+    <div class="modal fade" id="bridgeModal" tabindex="-1" aria-labelledby="bridgeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="bridgeModalLabel"><i class="bi bi-lightbulb"></i> Argumento de Venta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <canvas id="chart-client-bridge" height="280"></canvas>
+                        </div>
+                        <div class="col-md-7">
+                            <div id="bridge-claim" class="p-3">
+                                <p class="text-muted text-center mb-0">Cargando...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light py-2">
+                    <small class="text-muted"><strong>Bridge:</strong> Compara lo que el cliente paga hoy (mantenimiento + infra HW) con la propuesta Core SaaS (precio lista − descuento). Ya no paga infra porque está incluida en el SaaS. Si el balance es <span class="text-success fw-bold">positivo</span>, paga menos que antes. Si es <span class="text-danger fw-bold">negativo</span>, paga algo más pero sin HW y con producto cloud.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<style>
+    th.sortable { user-select: none; }
+    th.sortable:hover { background-color: rgba(0,0,0,.5) !important; }
+    th.sortable .sort-icon { font-size: .75rem; margin-left: 2px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    var DB = @Html.Raw(ViewBag.DataJson);
+    var SAT_COLORS = { MobileA:'#198754', MobileE:'#20c997', Obras:'#fd7e14', Fegime:'#6f42c1', Auna:'#d63384' };
+    var SAT_DEFAULTS = { MobileA:20, MobileE:20, Obras:25, Fegime:15, Auna:15 };
+
+    var TIERS = [
+        { min: 0,  max: 5,     label: '0–5',   stdDefault: 85, damDefault: 65 },
+        { min: 6,  max: 15,    label: '6–15',  stdDefault: 75, damDefault: 55 },
+        { min: 16, max: 25,    label: '16–25', stdDefault: 65, damDefault: 50 },
+        { min: 26, max: 50,    label: '26–50', stdDefault: 55, damDefault: 45 },
+        { min: 51, max: 99999, label: '>50',   stdDefault: 45, damDefault: 35 }
+    ];
+
+    function fmt(n) { return Math.round(n).toLocaleString('es-ES'); }
+
+    // Summary label
+    document.getElementById('lbl-summary').innerHTML =
+        'Estándar: <strong>' + DB.stdClients + '</strong> cl · ' + DB.stdUsers.toLocaleString() + ' usrs &nbsp;|&nbsp; '
+        + 'DAM: <strong>' + DB.damClients + '</strong> cl · ' + DB.damUsers.toLocaleString() + ' usrs';
+
+    // Generate tier table
+    var tierHtml = '';
+    TIERS.forEach(function(t, i) {
+        var stdCl = DB.clients.filter(function(c) { return !c.isDam && c.usersErp >= t.min && c.usersErp <= t.max; }).length;
+        var damCl = DB.clients.filter(function(c) { return c.isDam && c.usersErp >= t.min && c.usersErp <= t.max; }).length;
+        tierHtml += '<tr>'
+            + '<td class="fw-bold text-nowrap">' + t.label + ' usrs</td>'
+            + '<td class="text-center">'
+            + '<div class="d-flex align-items-center gap-1 justify-content-center">'
+            + '<input type="number" class="form-control form-control-sm text-center tier-input" id="std-tier-' + i + '" '
+            + 'style="width:60px" min="10" max="150" step="1" value="' + t.stdDefault + '">'
+            + '<small class="text-muted">(' + stdCl + ')</small>'
+            + '</div></td>'
+            + '<td class="text-center">'
+            + '<div class="d-flex align-items-center gap-1 justify-content-center">'
+            + '<input type="number" class="form-control form-control-sm text-center tier-input" id="dam-tier-' + i + '" '
+            + 'style="width:60px" min="10" max="150" step="1" value="' + t.damDefault + '">'
+            + '<small class="text-muted">(' + damCl + ')</small>'
+            + '</div></td>'
+            + '</tr>';
+    });
+    document.getElementById('tier-table').innerHTML = tierHtml;
+
+    // Infra info
+    document.getElementById('infra-info').innerHTML = 'Solo <strong>' + DB.clientsWithInfra + '</strong> de ' + DB.totalClients + ' clientes tienen coste real. Mediana real: <strong>' + DB.infraMedianPerUser + ' €/usr/año</strong>';
+    document.getElementById('rate-infra').value = DB.infraMedianPerUser;
+
+    // Generate satellite sliders
+    var slHtml = '';
+    DB.satellites.forEach(function(s) {
+        var def = SAT_DEFAULTS[s.product] || 15;
+        slHtml += '<div class="col-md-4 col-lg-2">'
+            + '<label class="form-label small fw-bold">' + s.product + ' <span class="text-muted fw-normal">(' + s.totalUsers + 'u)</span></label>'
+            + '<input type="range" class="form-range sat-slider" id="rate-' + s.product + '" min="5" max="60" step="1" value="' + def + '" data-product="' + s.product + '">'
+            + '<span class="badge bg-success" id="val-' + s.product + '">' + def + '€</span>'
+            + '</div>';
+    });
+    document.getElementById('sat-sliders').innerHTML = slHtml;
+
+    // Partner filter
+    var partners = [...new Set(DB.clients.map(c => c.partner).filter(Boolean))].sort();
+    var partnerSel = document.getElementById('filter-partner');
+    partners.forEach(function(p) {
+        var opt = document.createElement('option');
+        opt.value = p; opt.textContent = p;
+        partnerSel.appendChild(opt);
+    });
+
+    var clientDiscounts = {};
+    var clientIncrements = {};
+    var excludedClients = {};
+
+    // Sorting state
+    var sortCol = 'usersErp';
+    var sortDir = 'desc';
+
+    // Populate satellite filter with specific products
+    var satFilterSel = document.getElementById('filter-sat');
+    DB.satellites.forEach(function(s) {
+        var opt = document.createElement('option');
+        opt.value = 'has:' + s.product;
+        opt.textContent = 'Con ' + s.product;
+        satFilterSel.appendChild(opt);
+    });
+
+    function getClientIncrement(code) {
+        if (clientIncrements.hasOwnProperty(code)) return clientIncrements[code];
+        return null;
+    }
+
+    function getClientDiscount(code) {
+        if (clientDiscounts.hasOwnProperty(code)) return clientDiscounts[code];
+        return null;
+    }
+
+    function isExcluded(code) {
+        return excludedClients[code] === true;
+    }
+
+    // --- Simulation persistence (DB via API) ---
+    var cachedSims = [];
+
+    async function fetchSimulations() {
+        try {
+            var resp = await fetch('/api/simulations');
+            if (!resp.ok) return [];
+            return await resp.json();
+        } catch(e) { return []; }
+    }
+
+    async function refreshSimDropdown() {
+        cachedSims = await fetchSimulations();
+        var sel = document.getElementById('sel-simulations');
+        sel.innerHTML = '<option value="">— Seleccionar simulación (' + cachedSims.length + ') —</option>';
+        cachedSims.forEach(function(s) {
+            var opt = document.createElement('option');
+            opt.value = s.id;
+            var d = new Date(s.updatedAt);
+            opt.textContent = s.title + ' (' + d.toLocaleDateString('es-ES') + ')';
+            sel.appendChild(opt);
+        });
+    }
+
+    function parseSimState(sim) {
+        try { return typeof sim.stateJson === 'string' ? JSON.parse(sim.stateJson) : sim.stateJson; }
+        catch(e) { return {}; }
+    }
+
+    function buildCurrentState() {
+        var tiers = getTierRates();
+        var satRates = {};
+        DB.satellites.forEach(function(s) {
+            satRates[s.product] = parseInt(document.getElementById('rate-' + s.product).value);
+        });
+        return {
+            tiers: tiers,
+            infraEstRate: parseInt(document.getElementById('rate-infra').value),
+            marginPct: parseInt(document.getElementById('rate-margin').value),
+            incrementPct: parseInt(document.getElementById('rate-increment').value),
+            satRates: satRates,
+            clientDiscounts: Object.assign({}, clientDiscounts),
+            clientIncrements: Object.assign({}, clientIncrements),
+            excludedClients: Object.assign({}, excludedClients),
+            clientResults: buildClientResults()
+        };
+    }
+
+    function applyState(state) {
+        if (state.tiers) {
+            state.tiers.forEach(function(t, i) {
+                var stdEl = document.getElementById('std-tier-' + i);
+                var damEl = document.getElementById('dam-tier-' + i);
+                if (stdEl) stdEl.value = t.std;
+                if (damEl) damEl.value = t.dam;
+            });
+        }
+        if (state.infraEstRate !== undefined) document.getElementById('rate-infra').value = state.infraEstRate;
+        if (state.marginPct !== undefined) document.getElementById('rate-margin').value = state.marginPct;
+        if (state.incrementPct !== undefined) document.getElementById('rate-increment').value = state.incrementPct;
+        if (state.satRates) {
+            Object.keys(state.satRates).forEach(function(p) {
+                var el = document.getElementById('rate-' + p);
+                if (el) el.value = state.satRates[p];
+            });
+        }
+        clientDiscounts = state.clientDiscounts || {};
+        clientIncrements = state.clientIncrements || {};
+        excludedClients = state.excludedClients || {};
+        calculate();
+    }
+
+    function showSimStatus(msg) {
+        document.getElementById('sim-status').textContent = msg;
+        setTimeout(function() { document.getElementById('sim-status').textContent = ''; }, 3000);
+    }
+
+    function buildClientResults() {
+        return lastClientRows.map(function(c) {
+            return {
+                code: c.code, name: c.name, partner: c.partner,
+                usersErp: c.usersErp, isDam: c.isDam,
+                arrActual: c.arrActual, finalArr: c.finalArr,
+                satArr: c.satArr, satDetail: c.satDetail,
+                infraCost: c.infraCost, argument: c.argument,
+                effectivePct: c.effectivePct, excluded: isExcluded(c.code)
+            };
+        });
+    }
+
+    var activeSimId = null;
+    var activeSimTitle = '';
+
+    function updateOverwriteButton() {
+        var btn = document.getElementById('btn-overwrite-sim');
+        if (activeSimId) {
+            btn.classList.remove('d-none');
+            btn.title = 'Sobreescribir "' + activeSimTitle + '"';
+        } else {
+            btn.classList.add('d-none');
+        }
+    }
+
+    document.getElementById('btn-save-sim').addEventListener('click', async function() {
+        var title = document.getElementById('sim-title').value.trim();
+        if (!title) { document.getElementById('sim-title').focus(); return; }
+        var state = buildCurrentState();
+        try {
+            var resp = await fetch('/api/simulations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: title, stateJson: JSON.stringify(state) })
+            });
+            if (!resp.ok) { showSimStatus('✗ Error al guardar'); return; }
+            var saved = await resp.json();
+            activeSimId = saved.id;
+            activeSimTitle = saved.title;
+            await refreshSimDropdown();
+            document.getElementById('sel-simulations').value = saved.id;
+            document.getElementById('sim-title').value = '';
+            updateOverwriteButton();
+            showSimStatus('✓ Guardada "' + title + '"');
+        } catch(e) { showSimStatus('✗ Error de conexión'); }
+    });
+
+    document.getElementById('btn-load-sim').addEventListener('click', function() {
+        var id = document.getElementById('sel-simulations').value;
+        if (!id) return;
+        var found = cachedSims.find(function(s) { return s.id == id; });
+        if (!found) return;
+        activeSimId = found.id;
+        activeSimTitle = found.title;
+        applyState(parseSimState(found));
+        updateOverwriteButton();
+        showSimStatus('✓ Cargada "' + found.title + '"');
+    });
+
+    document.getElementById('btn-delete-sim').addEventListener('click', async function() {
+        var id = document.getElementById('sel-simulations').value;
+        if (!id) return;
+        var found = cachedSims.find(function(s) { return s.id == id; });
+        if (!found || !confirm('¿Eliminar "' + found.title + '"?')) return;
+        try {
+            await fetch('/api/simulations/' + id, { method: 'DELETE' });
+            if (activeSimId == id) { activeSimId = null; activeSimTitle = ''; }
+            await refreshSimDropdown();
+            updateOverwriteButton();
+            showSimStatus('✓ Eliminada');
+        } catch(e) { showSimStatus('✗ Error al eliminar'); }
+    });
+
+    document.getElementById('btn-overwrite-sim').addEventListener('click', async function() {
+        if (!activeSimId) return;
+        var state = buildCurrentState();
+        try {
+            var resp = await fetch('/api/simulations/' + activeSimId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stateJson: JSON.stringify(state) })
+            });
+            if (!resp.ok) { showSimStatus('✗ Error al actualizar'); return; }
+            await refreshSimDropdown();
+            document.getElementById('sel-simulations').value = activeSimId;
+            showSimStatus('✓ Actualizada "' + activeSimTitle + '"');
+        } catch(e) { showSimStatus('✗ Error de conexión'); }
+    });
+
+    refreshSimDropdown();
+
+    var lastClientRows = [];
+
+    function getTierRates() {
+        return TIERS.map(function(t, i) {
+            return {
+                min: t.min, max: t.max, label: t.label,
+                std: parseInt(document.getElementById('std-tier-' + i).value) || t.stdDefault,
+                dam: parseInt(document.getElementById('dam-tier-' + i).value) || t.damDefault
+            };
+        });
+    }
+
+    function getRateForUsers(usersErp, isDam, tiers) {
+        for (var i = 0; i < tiers.length; i++) {
+            if (usersErp >= tiers[i].min && usersErp <= tiers[i].max) {
+                return isDam ? tiers[i].dam : tiers[i].std;
+            }
+        }
+        var last = tiers[tiers.length - 1];
+        return isDam ? last.dam : last.std;
+    }
+
+    function calculate() {
+        var tiers = getTierRates();
+        var infraEstRate = parseInt(document.getElementById('rate-infra').value);
+        var marginPct = parseInt(document.getElementById('rate-margin').value);
+        var incrementPct = parseInt(document.getElementById('rate-increment').value);
+        var discountFactor = 1 - (marginPct / 100);
+
+        document.getElementById('val-infra').textContent = infraEstRate + ' €/usr/año';
+        document.getElementById('val-margin').textContent = marginPct + '%';
+        document.getElementById('val-increment').textContent = incrementPct + '%';
+
+        // Margin info — weighted average across all clients using tier rates
+        var totalWeightedRate = 0, totalUsersAll = 0;
+        DB.clients.forEach(function(c) {
+            totalWeightedRate += c.usersErp * getRateForUsers(c.usersErp, c.isDam, tiers);
+            totalUsersAll += c.usersErp;
+        });
+        var avgListRate = totalUsersAll > 0 ? Math.round(totalWeightedRate / totalUsersAll) : 0;
+        var finalRate = Math.round(avgListRate * discountFactor);
+        document.getElementById('margin-list').textContent = avgListRate + '€';
+        document.getElementById('margin-final').textContent = finalRate + '€';
+
+        var satRates = {};
+        DB.satellites.forEach(function(s) {
+            var r = parseInt(document.getElementById('rate-' + s.product).value);
+            document.getElementById('val-' + s.product).textContent = r + '€';
+            satRates[s.product] = r;
+        });
+
+        // Calculate per client
+        var totalListArr = 0, totalFinalArr = 0, totalCoreOnly = 0, totalSatOnly = 0, totalInfra = 0, totalArgument = 0, totalDiscount = 0;
+        var activeCount = 0;
+        var clientRows = DB.clients.map(function(c) {
+            var excluded = isExcluded(c.code);
+            var erpRate = getRateForUsers(c.usersErp, c.isDam, tiers);
+            var listArr = c.usersErp * erpRate * 12;
+
+            var satArr = 0;
+            var satDetail = [];
+            DB.satellites.forEach(function(s) {
+                var u = c.satellites[s.product] || 0;
+                if (u > 0) {
+                    var a = u * satRates[s.product] * 12;
+                    satArr += a;
+                    satDetail.push(s.product + ':' + u + 'u');
+                }
+            });
+
+            var totalList = listArr + satArr;
+            var clientPct = getClientDiscount(c.code);
+            var clientInc = getClientIncrement(c.code);
+
+            var effectiveInc = clientInc !== null ? clientInc : incrementPct;
+            var effectivePct, discount, finalArr;
+
+            if (effectiveInc > 0 && (clientInc !== null || marginPct === 0)) {
+                // Incremento manda: ARR final = ARR actual * (1 + inc%)
+                finalArr = c.arrActual * (1 + effectiveInc / 100);
+                discount = totalList - finalArr;
+                if (discount < 0) discount = 0;
+                effectivePct = totalList > 0 ? Math.round((discount / totalList) * 100) : 0;
+            } else {
+                // Descuento manda: ARR final = lista * (1 - dto%)
+                effectivePct = clientPct !== null ? clientPct : marginPct;
+                discount = totalList * (effectivePct / 100);
+                finalArr = totalList - discount;
+            }
+
+            var deltaArrPct = c.arrActual > 0 ? ((finalArr - c.arrActual) / c.arrActual * 100) : 0;
+
+            var infraReal = c.infraCost > 0;
+            var infraValue = infraReal ? c.infraCost : (c.usersErp * infraEstRate);
+
+            var sobrecoste = finalArr - c.arrActual;
+            var argument = infraValue - sobrecoste;
+
+            var corePortion = finalArr * (listArr / (totalList || 1));
+            var satPortion = finalArr * (satArr / (totalList || 1));
+
+            if (!excluded) {
+                totalListArr += totalList;
+                totalFinalArr += finalArr;
+                totalCoreOnly += corePortion;
+                totalSatOnly += satPortion;
+                totalInfra += infraValue;
+                totalArgument += argument;
+                totalDiscount += discount;
+                activeCount++;
+            }
+
+            return {
+                code: c.code, name: c.name, city: c.city, partner: c.partner,
+                usersErp: c.usersErp, isDam: c.isDam,
+                arrActual: c.arrActual, infraCost: infraValue,
+                infraReal: infraReal,
+                listArr: totalList, discount: discount, finalArr: finalArr,
+                effectivePct: effectivePct, hasCustomPct: clientPct !== null,
+                effectiveInc: effectiveInc, hasCustomInc: clientInc !== null,
+                deltaArrPct: deltaArrPct,
+                satArr: satArr,
+                sobrecoste: sobrecoste, argument: argument,
+                satDetail: satDetail,
+                satCount: satDetail.length,
+                excluded: excluded
+            };
+        });
+
+        lastClientRows = clientRows;
+
+        // Margin impact
+        document.getElementById('margin-impact').textContent = '-' + fmt(totalDiscount) + '€/año';
+
+        // Increment info
+        var arrTarget = DB.totalArrActual * (1 + incrementPct / 100);
+        document.getElementById('increment-actual').textContent = fmt(DB.totalArrActual) + '€';
+        document.getElementById('increment-target').textContent = fmt(arrTarget) + '€';
+        document.getElementById('increment-delta').textContent = '+' + fmt(arrTarget - DB.totalArrActual) + '€';
+
+        // KPIs - format helper
+        function fmtM(v) { return (v/1e6).toFixed(2) + 'M€'; }
+
+        document.getElementById('kpi-actual').textContent = fmtM(DB.totalArrActual);
+        document.getElementById('kpi-actual-detail').textContent = DB.totalClients + ' clientes · ' + fmt(DB.stdUsers + DB.damUsers) + ' usrs';
+
+        var delta = totalFinalArr - DB.totalArrActual;
+        var deltaPercent = (delta / DB.totalArrActual * 100).toFixed(0);
+        document.getElementById('kpi-core').textContent = fmtM(totalCoreOnly);
+        document.getElementById('kpi-sat').textContent = fmtM(totalSatOnly);
+        document.getElementById('kpi-total').textContent = fmtM(totalFinalArr);
+        document.getElementById('kpi-infra').textContent = fmtM(totalInfra);
+        document.getElementById('kpi-delta').textContent = (delta >= 0 ? '+' : '') + deltaPercent + '%';
+        var avgArg = activeCount > 0 ? totalArgument / activeCount : 0;
+        document.getElementById('kpi-argument').textContent = (avgArg >= 0 ? '+' : '') + fmt(avgArg) + '€';
+
+        // Persist active simulation state for Plan Migración
+        var simState = {
+            tiers: tiers,
+            infraEstRate: infraEstRate,
+            marginPct: marginPct,
+            incrementPct: incrementPct,
+            satRates: satRates,
+            excludedClients: Object.assign({}, excludedClients),
+            clientResults: clientRows.map(function(c) {
+                return {
+                    code: c.code, name: c.name, partner: c.partner,
+                    usersErp: c.usersErp, isDam: c.isDam,
+                    arrActual: c.arrActual, finalArr: c.finalArr,
+                    satArr: c.satArr, satDetail: c.satDetail,
+                    infraCost: c.infraCost, argument: c.argument,
+                    effectivePct: c.effectivePct, excluded: c.excluded
+                };
+            }),
+            timestamp: Date.now()
+        };
+        // simState is now persisted via API, not localStorage
+
+        // Table
+        renderTable(clientRows);
+    }
+
+    function renderTable(rows) {
+        var search = document.getElementById('filter-search').value.toLowerCase();
+        var partner = document.getElementById('filter-partner').value;
+        var satFilter = document.getElementById('filter-sat').value;
+        var usrMin = parseInt(document.getElementById('filter-usr-min').value);
+        var usrMax = parseInt(document.getElementById('filter-usr-max').value);
+        var arrMin = parseFloat(document.getElementById('filter-arr-min').value);
+        var arrMax = parseFloat(document.getElementById('filter-arr-max').value);
+
+        var filtered = rows.filter(function(c) {
+            if (search && !(c.name || '').toLowerCase().includes(search) && !String(c.code).includes(search)) return false;
+            if (partner && c.partner !== partner) return false;
+            if (satFilter === 'none' && c.satDetail.length > 0) return false;
+            if (satFilter === 'any' && c.satDetail.length === 0) return false;
+            if (satFilter.indexOf('has:') === 0) {
+                var prod = satFilter.substring(4);
+                if (!c.satDetail.some(function(s) { return s.indexOf(prod) === 0; })) return false;
+            }
+            if (!isNaN(usrMin) && c.usersErp < usrMin) return false;
+            if (!isNaN(usrMax) && c.usersErp > usrMax) return false;
+            if (!isNaN(arrMin) && c.arrActual < arrMin) return false;
+            if (!isNaN(arrMax) && c.arrActual > arrMax) return false;
+            return true;
+        });
+
+        filtered.sort(function(a, b) {
+            var va, vb;
+            if (sortCol === 'name') { va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); }
+            else if (sortCol === 'partner') { va = (a.partner || '').toLowerCase(); vb = (b.partner || '').toLowerCase(); }
+            else if (sortCol === 'code') { va = a.code; vb = b.code; }
+            else if (sortCol === 'satCount') { va = a.satDetail.length; vb = b.satDetail.length; }
+            else { va = a[sortCol] || 0; vb = b[sortCol] || 0; }
+            if (va < vb) return sortDir === 'asc' ? -1 : 1;
+            if (va > vb) return sortDir === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        document.getElementById('filter-count').textContent = filtered.length + ' de ' + rows.length + ' clientes';
+
+        updateSortIcons();
+
+        var html = '';
+        filtered.forEach(function(c) {
+            var argClass = c.argument >= 0 ? 'text-success' : 'text-danger';
+            var argIcon = c.argument >= 0 ? '▲' : '▼';
+            var damBadge = c.isDam ? ' <span class="badge bg-info">DAM</span>' : '';
+            var satBadges = c.satDetail.map(function(s) { return '<span class="badge bg-light text-dark border me-1">' + s + '</span>'; }).join('');
+            var infraBadge = c.infraReal
+                ? '<span class="badge bg-success ms-1">REAL</span>'
+                : '<span class="badge bg-warning text-dark ms-1">SIM</span>';
+
+            var totalAntes = c.arrActual + c.infraCost;
+            var totalDespues = c.finalArr;
+            var tooltip = '━━━ ANTES ━━━\n'
+                + '  Mantenimiento OnPremise: ' + fmt(c.arrActual) + ' €/año\n'
+                + '  Infraestructura (HW/hosting): ' + fmt(c.infraCost) + ' €/año\n'
+                + '  TOTAL ACTUAL: ' + fmt(totalAntes) + ' €/año\n'
+                + '\n━━━ DESPUÉS (Core SaaS) ━━━\n'
+                + '  Precio lista: ' + fmt(c.listArr) + ' €/año\n'
+                + (c.discount > 0 ? '  Descuento (' + c.effectivePct + '%): −' + fmt(c.discount) + ' €/año\n' : '')
+                + '  NUEVO COSTE: ' + fmt(c.finalArr) + ' €/año\n'
+                + '  Infra: 0€ (incluida en SaaS)\n'
+                + '\n━━━ BALANCE ━━━\n'
+                + '  Ahorro infra: +' + fmt(c.infraCost) + ' €\n'
+                + '  Diferencia tarifa: ' + (c.sobrecoste >= 0 ? '+' : '') + fmt(c.sobrecoste) + ' €\n'
+                + '  ─────────────────\n'
+                + '  RESULTADO: ' + (c.argument >= 0 ? '✓ AHORRA ' + fmt(c.argument) + ' €/año' : '✗ Invierte ' + fmt(Math.abs(c.argument)) + ' €/año más');
+
+            var pctInputClass = c.hasCustomPct ? 'border-danger' : '';
+            var pctInput = '<input type="number" class="form-control form-control-sm text-center client-pct ' + pctInputClass + '" '
+                + 'style="width:55px;padding:1px 3px" '
+                + 'data-code="' + c.code + '" '
+                + 'value="' + c.effectivePct + '" min="0" max="70" step="1">';
+
+            var rowClass = c.excluded ? 'client-row opacity-50' : 'client-row';
+            var chkd = c.excluded ? '' : ' checked';
+
+            html += '<tr class="' + rowClass + '" style="cursor:pointer" '
+                + 'data-arrActual="' + c.arrActual + '" '
+                + 'data-infraCost="' + c.infraCost + '" '
+                + 'data-listArr="' + c.listArr + '" '
+                + 'data-discount="' + c.discount + '" '
+                + 'data-finalArr="' + c.finalArr + '" '
+                + 'data-argument="' + c.argument + '" '
+                + 'data-pct="' + c.effectivePct + '" '
+                + 'data-name="' + (c.name || '').replace(/"/g, '&quot;') + '" '
+                + 'data-code="' + c.code + '" '
+                + 'data-infraReal="' + c.infraReal + '" '
+                + 'title="' + tooltip.replace(/"/g, '&quot;') + '">'
+                + '<td class="text-center"><input type="checkbox" class="form-check-input client-chk" data-code="' + c.code + '"' + chkd + '></td>'
+                + '<td><code>' + c.code + '</code></td>'
+                + '<td class="text-nowrap">' + (c.name || '') + damBadge + '</td>'
+                + '<td><small>' + (c.partner || '') + '</small></td>'
+                + '<td class="text-end">' + c.usersErp + '</td>'
+                + '<td class="text-end">' + fmt(c.arrActual) + ' €</td>'
+                + '<td class="text-end text-muted"><s>' + fmt(c.listArr) + ' €</s></td>'
+                + '<td class="text-center">' + pctInput + '</td>'
+                + '<td class="text-end text-success fw-bold">' + fmt(c.finalArr) + ' €</td>'
+                + '<td class="text-end text-danger">' + (c.discount > 0 ? '-' + fmt(c.discount) + ' €' : '—') + '</td>'
+                + '<td class="text-end">' + fmt(c.infraCost) + ' € ' + infraBadge + '</td>'
+                + '<td class="text-end ' + argClass + ' fw-bold">' + argIcon + ' ' + fmt(Math.abs(c.argument)) + ' €</td>'
+                + '<td class="text-end ' + (c.sobrecoste >= 0 ? 'text-success' : 'text-danger') + '">' + (c.sobrecoste >= 0 ? '+' : '') + fmt(c.sobrecoste) + ' €</td>'
+                + '<td class="text-center"><input type="number" class="form-control form-control-sm text-center client-inc ' + (c.hasCustomInc ? 'border-warning' : '') + '" style="width:55px;padding:1px 3px" data-code="' + c.code + '" value="' + Math.round(c.deltaArrPct) + '" min="-50" max="500" step="5"> <small class="text-muted">' + (c.effectiveInc > 0 && Math.round(c.deltaArrPct) < c.effectiveInc ? '⚠' : '') + '</small></td>'
+                + '<td>' + satBadges + '</td>'
+                + '</tr>';
+        });
+        document.getElementById('client-table').innerHTML = html;
+
+        // Bind per-client discount inputs
+        document.querySelectorAll('.client-pct').forEach(function(input) {
+            input.addEventListener('change', function() {
+                var code = parseInt(this.dataset.code);
+                var val = parseInt(this.value);
+                var globalPct = parseInt(document.getElementById('rate-margin').value);
+                if (isNaN(val) || val === globalPct) {
+                    delete clientDiscounts[code];
+                } else {
+                    clientDiscounts[code] = Math.max(0, Math.min(70, val));
+                }
+                calculate();
+            });
+        });
+
+        // Bind per-client increment inputs
+        document.querySelectorAll('.client-inc').forEach(function(input) {
+            input.addEventListener('change', function() {
+                var code = parseInt(this.dataset.code);
+                var val = parseInt(this.value);
+                var globalInc = parseInt(document.getElementById('rate-increment').value);
+                if (isNaN(val) || val === globalInc) {
+                    delete clientIncrements[code];
+                } else {
+                    clientIncrements[code] = Math.max(-50, Math.min(500, val));
+                }
+                calculate();
+            });
+        });
+
+        // Bind per-client exclude checkboxes
+        document.querySelectorAll('.client-chk').forEach(function(chk) {
+            chk.addEventListener('change', function() {
+                var code = parseInt(this.dataset.code);
+                if (this.checked) {
+                    delete excludedClients[code];
+                } else {
+                    excludedClients[code] = true;
+                }
+                calculate();
+            });
+        });
+
+        // Bind click for modal bridge
+        document.querySelectorAll('.client-row').forEach(function(row) {
+            row.addEventListener('click', function(e) {
+                if (e.target.tagName === 'INPUT') return;
+                renderClientBridge(this.dataset);
+                var modal = new bootstrap.Modal(document.getElementById('bridgeModal'));
+                modal.show();
+            });
+        });
+    }
+
+    var clientBridgeChart;
+
+    // Plugin: connector lines between bars
+    var waterfallLinesPlugin = {
+        id: 'waterfallLines',
+        afterDatasetsDraw: function(chart) {
+            var meta = chart.getDatasetMeta(0);
+            var ctx = chart.ctx;
+            ctx.save();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 3]);
+            for (var i = 0; i < meta.data.length - 1; i++) {
+                var curr = meta.data[i];
+                var next = meta.data[i + 1];
+                var currTop = Math.min(curr.y, curr.base);
+                var nextTop = Math.min(next.y, next.base);
+                var currBottom = Math.max(curr.y, curr.base);
+                var yLine = curr.y < curr.base ? curr.y : curr.base;
+                ctx.beginPath();
+                ctx.moveTo(curr.x + curr.width / 2, yLine);
+                ctx.lineTo(next.x - next.width / 2, yLine);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    };
+
+    // Plugin: data labels on bars
+    var dataLabelsPlugin = {
+        id: 'waterfallLabels',
+        afterDatasetsDraw: function(chart) {
+            var meta = chart.getDatasetMeta(0);
+            var ctx = chart.ctx;
+            ctx.save();
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            var rawValues = chart.data.datasets[0]._rawValues;
+            if (!rawValues) return;
+            for (var i = 0; i < meta.data.length; i++) {
+                var bar = meta.data[i];
+                var val = rawValues[i];
+                var yPos = Math.min(bar.y, bar.base) - 8;
+                ctx.fillStyle = '#333';
+                var label = (val >= 0 && i > 0 && i < meta.data.length - 1 ? '+' : '') + fmt(Math.round(val)) + ' €';
+                ctx.fillText(label, bar.x, yPos);
+            }
+            ctx.restore();
+        }
+    };
+
+    function renderClientBridge(d) {
+        var arrActual = parseFloat(d.arractual);
+        var infraCost = parseFloat(d.infracost);
+        var listArr = parseFloat(d.listarr);
+        var discount = parseFloat(d.discount);
+        var finalArr = parseFloat(d.finalarr);
+        var argument = parseFloat(d.argument);
+        var pct = d.pct;
+        var name = d.name;
+        var code = d.code;
+        var infraReal = d.infrareal === 'true';
+
+        var totalAntes = arrActual + infraCost;
+        var sobrecoste = finalArr - arrActual;
+
+        var ahorroCliente = totalAntes - finalArr;
+        var incrementalArr = finalArr - arrActual;
+
+        var labels = ['ARR actual', 'Hardware\nactual', 'New ARR', 'Descuento', '− Hardware\nactual', 'ARR final', 'AHORRO\ncliente', 'INCREMENTAL\nARR'];
+
+        var barData = [];
+        var colors = [];
+
+        // Bar 0: ARR actual (starts at 0)
+        barData.push([0, arrActual]);
+        colors.push('#5B9BD5');
+
+        // Bar 1: Hardware (stacks on top)
+        barData.push([arrActual, arrActual + infraCost]);
+        colors.push('#5B9BD5');
+
+        // Bar 2: New ARR = precio lista (desde 0)
+        barData.push([0, listArr]);
+        colors.push('#5B9BD5');
+
+        // Bar 3: Descuento (goes down)
+        barData.push([listArr - discount, listArr]);
+        colors.push('#FF4444');
+
+        // Bar 4: -Hardware (goes down)
+        var afterDiscount = listArr - discount;
+        barData.push([afterDiscount - infraCost, afterDiscount]);
+        colors.push('#FF4444');
+
+        // Bar 5: ARR final (from 0)
+        barData.push([0, finalArr]);
+        colors.push('#5B9BD5');
+
+        // Bar 6: Ahorro cliente = (ARR actual + HW) - ARR final
+        barData.push([0, Math.abs(ahorroCliente)]);
+        colors.push(ahorroCliente >= 0 ? '#70AD47' : '#FF4444');
+
+        // Bar 7: Incremental ARR = ARR final - ARR actual (lo que ganamos nosotros)
+        barData.push([0, Math.abs(incrementalArr)]);
+        colors.push(incrementalArr >= 0 ? '#FFC000' : '#FF4444');
+
+        var rawValues = [arrActual, infraCost, listArr, -discount, -infraCost, finalArr, ahorroCliente, incrementalArr];
+
+        if (clientBridgeChart) clientBridgeChart.destroy();
+        clientBridgeChart = new Chart(document.getElementById('chart-client-bridge'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: barData,
+                    backgroundColor: colors,
+                    borderColor: '#3a6fa5',
+                    borderWidth: 1,
+                    _rawValues: rawValues
+                }]
+            },
+            plugins: [waterfallLinesPlugin, dataLabelsPlugin],
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Bridge ARR — ' + name, font: { size: 14 } },
+                    tooltip: { callbacks: { label: function(ctx) { var v = rawValues[ctx.dataIndex]; return (v >= 0 ? '+' : '') + fmt(Math.round(v)) + ' €'; } } }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 10 } } },
+                    y: { title: { display: true, text: '€' }, ticks: { callback: function(v) { return fmt(v); } } }
+                }
+            }
+        });
+
+        // Claim text
+        var infraLabel = infraReal ? '' : ' <span class="badge bg-warning text-dark">estimado</span>';
+        var resultClass = argument >= 0 ? 'text-success' : 'text-danger';
+        var resultIcon = argument >= 0 ? '✓' : '✗';
+        var ahorroNeto = totalAntes - finalArr;
+
+        var claimHtml = '<h5 class="mb-3"><code>' + code + '</code> ' + name + '</h5>'
+            + '<div class="row mb-3"><div class="col-md-6">'
+            + '<table class="table table-sm table-borderless mb-0">'
+            + '<tr class="border-bottom"><td colspan="2"><strong>HOY PAGA</strong></td></tr>'
+            + '<tr><td>Mantenimiento OnPremise:</td><td class="text-end">' + fmt(arrActual) + ' €</td></tr>'
+            + '<tr><td>Infraestructura HW:' + infraLabel + '</td><td class="text-end">' + fmt(infraCost) + ' €</td></tr>'
+            + '<tr class="fw-bold border-top bg-light"><td>TOTAL HOY:</td><td class="text-end">' + fmt(totalAntes) + ' €/año</td></tr>'
+            + '</table></div><div class="col-md-6">'
+            + '<table class="table table-sm table-borderless mb-0">'
+            + '<tr class="border-bottom"><td colspan="2"><strong>CON CORE SAAS</strong></td></tr>'
+            + '<tr><td>Precio lista:</td><td class="text-end">' + fmt(listArr) + ' €</td></tr>'
+            + (discount > 0 ? '<tr class="text-success"><td>Descuento ' + pct + '%:</td><td class="text-end">−' + fmt(discount) + ' €</td></tr>' : '')
+            + '<tr><td>Infraestructura:</td><td class="text-end">0 € (incluida)</td></tr>'
+            + '<tr class="fw-bold border-top bg-light"><td>TOTAL NUEVO:</td><td class="text-end text-primary">' + fmt(finalArr) + ' €/año</td></tr>'
+            + '</table></div></div>'
+            + '<div class="p-3 rounded border ' + (ahorroNeto >= 0 ? 'border-success bg-success bg-opacity-10' : 'border-danger bg-danger bg-opacity-10') + '">'
+            + '<div class="row text-center">'
+            + '<div class="col-md-4"><small class="text-muted">Total hoy (ARR+HW)</small><br><strong class="fs-5">' + fmt(totalAntes) + ' €</strong></div>'
+            + '<div class="col-md-1 d-flex align-items-center justify-content-center"><strong class="fs-4">−</strong></div>'
+            + '<div class="col-md-4"><small class="text-muted">Nuevo ARR Core</small><br><strong class="fs-5 text-primary">' + fmt(finalArr) + ' €</strong></div>'
+            + '<div class="col-md-1 d-flex align-items-center justify-content-center"><strong class="fs-4">=</strong></div>'
+            + '<div class="col-md-2"><small class="text-muted">Ahorro</small><br><strong class="fs-4 ' + resultClass + '">' + (ahorroNeto >= 0 ? '+' : '') + fmt(ahorroNeto) + ' €</strong></div>'
+            + '</div></div>'
+            + '<p class="mt-3 mb-0 fst-italic border-start border-3 border-primary ps-3">«Hoy pagas <strong>' + fmt(totalAntes) + '€/año</strong> entre mantenimiento e infra. '
+            + 'Con Core SaaS te cobraríamos ' + fmt(listArr) + '€'
+            + (discount > 0 ? ', pero te hacemos un <strong>' + pct + '% de descuento</strong> → pagas <strong>' + fmt(finalArr) + '€</strong>' : '')
+            + '. Ya no pagas infraestructura. '
+            + (ahorroNeto >= 0 ? '<strong class="text-success">Te ahorras ' + fmt(ahorroNeto) + '€/año</strong>.' : 'Inviertes ' + fmt(Math.abs(ahorroNeto)) + '€/año más, pero sin HW y con producto cloud moderno.') + '»</p>';
+
+        document.getElementById('bridge-claim').innerHTML = claimHtml;
+    }
+
+    // Sort icons update
+    function updateSortIcons() {
+        document.querySelectorAll('th.sortable .sort-icon').forEach(function(icon) {
+            var th = icon.closest('th');
+            if (th.dataset.col === sortCol) {
+                icon.className = sortDir === 'asc' ? 'bi bi-sort-up sort-icon' : 'bi bi-sort-down sort-icon';
+            } else {
+                icon.className = 'bi bi-arrow-down-up sort-icon opacity-50';
+            }
+        });
+    }
+
+    // Sort click handlers
+    document.querySelectorAll('th.sortable').forEach(function(th) {
+        th.style.cursor = 'pointer';
+        th.addEventListener('click', function() {
+            var col = this.dataset.col;
+            if (sortCol === col) {
+                sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortCol = col;
+                sortDir = (col === 'name' || col === 'partner' || col === 'code') ? 'asc' : 'desc';
+            }
+            renderTable(lastClientRows);
+        });
+    });
+
+    // Clear filters
+    document.getElementById('btn-clear-filters').addEventListener('click', function() {
+        document.getElementById('filter-search').value = '';
+        document.getElementById('filter-partner').value = '';
+        document.getElementById('filter-sat').value = '';
+        document.getElementById('filter-usr-min').value = '';
+        document.getElementById('filter-usr-max').value = '';
+        document.getElementById('filter-arr-min').value = '';
+        document.getElementById('filter-arr-max').value = '';
+        renderTable(lastClientRows);
+    });
+
+    // Events
+    document.getElementById('chk-all').addEventListener('change', function() {
+        var checked = this.checked;
+        if (checked) {
+            excludedClients = {};
+        } else {
+            DB.clients.forEach(function(c) { excludedClients[c.code] = true; });
+        }
+        calculate();
+    });
+    document.querySelectorAll('.tier-input').forEach(function(el) { el.addEventListener('change', calculate); });
+    document.getElementById('rate-infra').addEventListener('input', calculate);
+    document.getElementById('rate-margin').addEventListener('input', function() {
+        if (parseInt(this.value) > 0) {
+            document.getElementById('rate-increment').value = 0;
+        }
+        calculate();
+    });
+    document.getElementById('rate-increment').addEventListener('input', function() {
+        if (parseInt(this.value) > 0) {
+            document.getElementById('rate-margin').value = 0;
+        }
+        calculate();
+    });
+    document.querySelectorAll('.sat-slider').forEach(function(el) { el.addEventListener('input', calculate); });
+    document.getElementById('filter-search').addEventListener('input', function() { renderTable(lastClientRows); });
+    document.getElementById('filter-partner').addEventListener('change', function() { renderTable(lastClientRows); });
+    document.getElementById('filter-sat').addEventListener('change', function() { renderTable(lastClientRows); });
+    document.getElementById('filter-usr-min').addEventListener('input', function() { renderTable(lastClientRows); });
+    document.getElementById('filter-usr-max').addEventListener('input', function() { renderTable(lastClientRows); });
+    document.getElementById('filter-arr-min').addEventListener('input', function() { renderTable(lastClientRows); });
+    document.getElementById('filter-arr-max').addEventListener('input', function() { renderTable(lastClientRows); });
+
+    calculate();
+})();
+</script>
+}

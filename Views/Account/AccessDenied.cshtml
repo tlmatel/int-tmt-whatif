@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Sin Acceso";
+    var reason = Context.Request.Query["reason"].FirstOrDefault() ?? "No tienes permisos para acceder a esta aplicación.";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh">
+    <div class="text-center" style="max-width:520px">
+        <div class="rounded-circle bg-danger bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px">
+            <i class="bi bi-shield-lock text-danger" style="font-size:3rem"></i>
+        </div>
+        <h2 class="fw-bold mb-3">Acceso Denegado</h2>
+        <p class="text-muted fs-5 mb-2">@reason</p>
+        <p class="text-muted small mb-4">
+            Si crees que deberías tener acceso, contacta con el administrador de
+            <a href="https://gohubrd.telematel.dev" target="_blank">TMT Hub R&D</a>
+            para que te conceda permisos en <strong>CoreWhatIf</strong>.
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-secondary">
+                <i class="bi bi-box-arrow-right me-1"></i> Cerrar Sesión
+            </a>
+            <a href="https://gohubrd.telematel.dev" target="_blank" class="btn btn-primary">
+                <i class="bi bi-globe me-1"></i> Ir a Hub R&D
+            </a>
+        </div>
+    </div>
+</div>

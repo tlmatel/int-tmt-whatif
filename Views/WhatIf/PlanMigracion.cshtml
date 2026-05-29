@@ -1,0 +1,835 @@
+@{
+    ViewData["Title"] = "Plan de Migración";
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Simulador">Simulador</a></li>
+            <li class="breadcrumb-item active">Plan de Migración</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-2"><i class="bi bi-rocket-takeoff"></i> Plan de Migración</h1>
+    <p class="text-muted mb-3">
+        Usa la configuración del <strong>Simulador</strong> para priorizar clientes y visualizar cómo crece tu ARR acumulado mes a mes.
+    </p>
+
+    <!-- Barra Guardar / Cargar Plan -->
+    <div class="card mb-4 border-2 border-dark">
+        <div class="card-body py-2">
+            <div class="row align-items-center g-2">
+                <div class="col-auto">
+                    <i class="bi bi-bookmark-star fs-5"></i>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control form-control-sm" id="plan-title" placeholder="Nombre del plan...">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-dark" id="btn-save-plan">
+                        <i class="bi bi-save"></i> Guardar Plan
+                    </button>
+                </div>
+                <div class="col-auto border-start ps-3">
+                    <i class="bi bi-folder-open fs-5"></i>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select form-select-sm" id="sel-saved-plans">
+                        <option value="">— Seleccionar plan guardado —</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-success d-none" id="btn-overwrite-plan">
+                        <i class="bi bi-save-fill"></i> Guardar actual
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" id="btn-delete-plan">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="col-auto ms-auto">
+                    <small class="text-muted" id="plan-status"></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso: sin datos de simulación -->
+    <div class="alert alert-warning d-none" id="alert-no-sim">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>No hay datos de simulación.</strong>
+        Ve primero al <a asp-action="Simulador" class="alert-link">Simulador</a>, ajusta las tarifas y vuelve aquí.
+    </div>
+
+    <!-- Selector de simulación + Resumen -->
+    <div class="card mb-4 border-2 border-dark" id="sim-config-card">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <span><i class="bi bi-sliders"></i> <strong>Simulación</strong></span>
+                <select class="form-select form-select-sm bg-dark text-white border-secondary" id="sel-plan-sim" style="width:280px">
+                    <option value="">— Seleccionar simulación —</option>
+                </select>
+            </div>
+            <div>
+                <small class="text-white-50 me-3" id="cfg-excluded-count"></small>
+                <a asp-action="Simulador" class="btn btn-sm btn-outline-light">
+                    <i class="bi bi-pencil-square"></i> Ir al Simulador
+                </a>
+            </div>
+        </div>
+        <div class="card-body py-2">
+            <div class="row">
+                <div class="col-md-7">
+                    <small class="text-muted fw-bold d-block mb-1">Tarifas por Tramo (€/usr/mes)</small>
+                    <table class="table table-sm table-bordered mb-0" style="font-size:0.8rem">
+                        <thead class="table-light">
+                            <tr><th>Rango</th><th class="text-center">Estándar</th><th class="text-center">DAM</th></tr>
+                        </thead>
+                        <tbody id="cfg-tiers"></tbody>
+                    </table>
+                </div>
+                <div class="col-md-5 text-center">
+                    <div class="row g-2 mt-1">
+                        <div class="col-6"><small class="text-muted">Descuento</small><br><strong id="cfg-margin">—</strong></div>
+                        <div class="col-6"><small class="text-muted">Incremento</small><br><strong id="cfg-increment">—</strong></div>
+                        <div class="col-6"><small class="text-muted">Infra Est.</small><br><strong id="cfg-infra">—</strong></div>
+                        <div class="col-6"><small class="text-muted">Actualizado</small><br><strong id="cfg-time">—</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>Clientes Elegibles</small>
+                    <h3 id="kpi-elegibles" class="mb-0">—</h3>
+                    <small class="opacity-75">tras filtros</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>ARR Nuevo Acumulado</small>
+                    <h3 id="kpi-arr-nuevo" class="mb-0">—</h3>
+                    <small class="opacity-75">al completar plan</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-dark text-center h-100">
+                <div class="card-body p-2">
+                    <small>Delta vs Actual</small>
+                    <h3 id="kpi-delta" class="mb-0">—</h3>
+                    <small>ganancia neta</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>Meses Totales</small>
+                    <h3 id="kpi-meses" class="mb-0">—</h3>
+                    <small class="opacity-75">para migrar todo</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-dark text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>Usuarios Totales</small>
+                    <h3 id="kpi-users" class="mb-0">—</h3>
+                    <small class="opacity-75">a migrar</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-secondary text-white text-center h-100">
+                <div class="card-body p-2">
+                    <small>Media Usrs/Cliente</small>
+                    <h3 id="kpi-avg" class="mb-0">—</h3>
+                    <small class="opacity-75">elegibles</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles propios del Plan -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card h-100 border-2 border-primary">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    <strong>Capacidad de Migración</strong>
+                    <span class="ms-3 badge bg-light text-dark fs-6" id="val-capacity">5 cl/mes</span>
+                </div>
+                <div class="card-body py-2">
+                    <small class="text-muted d-block mb-1">Clientes que puedes migrar cada mes</small>
+                    <input type="range" class="form-range" id="rate-capacity" min="1" max="30" step="1" value="5">
+                    <div class="d-flex justify-content-between">
+                        <small>1 cl/mes</small>
+                        <small>30 cl/mes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100 border-2 border-danger">
+                <div class="card-header bg-danger text-white d-flex align-items-center">
+                    <i class="bi bi-funnel me-2"></i>
+                    <strong>Filtros de Prioridad</strong>
+                </div>
+                <div class="card-body py-2">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="filter-no-sat" checked>
+                                <label class="form-check-label" for="filter-no-sat">
+                                    <i class="bi bi-shield-check text-success"></i> Excluir clientes con satélites
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="filter-no-dam" checked>
+                                <label class="form-check-label" for="filter-no-dam">
+                                    <i class="bi bi-shield-check text-success"></i> Excluir clientes DAM
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Máx. usuarios por cliente</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="range" class="form-range" id="filter-max-users" min="1" max="500" step="1" value="500">
+                                <span class="badge bg-danger" id="val-max-users" style="min-width:70px">Sin límite</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico ARR Acumulado -->
+    <div class="card mb-4 border-2 border-success">
+        <div class="card-header bg-success text-white">
+            <i class="bi bi-graph-up-arrow"></i> <strong>ARR Acumulado por Mes de Migración</strong>
+        </div>
+        <div class="card-body py-2">
+            <canvas id="chart-arr" height="70"></canvas>
+        </div>
+    </div>
+
+    <!-- Gráficos secundarios (acordeón colapsado) -->
+    <div class="accordion mb-4" id="accordionCharts">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCharts">
+                    <i class="bi bi-bar-chart-line me-2"></i> <small>Gráficos adicionales (ARR mensual + distribución)</small>
+                </button>
+            </h2>
+            <div id="collapseCharts" class="accordion-collapse collapse" data-bs-parent="#accordionCharts">
+                <div class="accordion-body py-2 px-3">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-8">
+                            <canvas id="chart-monthly" height="80"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <div style="max-width:180px;margin:0 auto">
+                                <canvas id="chart-pie"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de clientes priorizados -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-list-ol"></i> Clientes Priorizados — Orden de Migración</span>
+            <div>
+                <input type="text" class="form-control form-control-sm d-inline-block" style="width:200px" id="filter-search" placeholder="Buscar cliente...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height:600px;overflow-y:auto">
+                <table class="table table-sm table-hover table-striped mb-0" style="width:100%">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th class="text-center">Mes</th>
+                            <th class="text-center">#</th>
+                            <th>Cód.</th>
+                            <th>Cliente</th>
+                            <th>Partner</th>
+                            <th class="text-end">Usuarios</th>
+                            <th class="text-center">Tipo</th>
+                            <th class="text-center">Satélites</th>
+                            <th class="text-end">ARR Actual</th>
+                            <th class="text-end text-success fw-bold">ARR Simulado</th>
+                            <th class="text-end">Dto.%</th>
+                            <th class="text-end">Delta</th>
+                            <th class="text-end">ARR Actual<br><small>Acum.</small></th>
+                            <th class="text-end fw-bold">ARR Nuevo<br><small>Acum.</small></th>
+                            <th class="text-end">Delta<br><small>Acum.</small></th>
+                        </tr>
+                    </thead>
+                    <tbody id="client-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    var DB = @Html.Raw(ViewBag.DataJson);
+
+    function fmt(n) { return Math.round(n).toLocaleString('es-ES'); }
+    function fmtM(v) { return (v / 1e6).toFixed(2) + 'M€'; }
+    function fmtK(v) { return v >= 1000000 ? (v / 1e6).toFixed(1) + 'M€' : v >= 1000 ? (v / 1000).toFixed(0) + 'k€' : fmt(v) + '€'; }
+
+    // --- Simulation loading (from DB API) ---
+    var savedSims = [];
+
+    async function fetchAndPopulateSimulations() {
+        try {
+            var resp = await fetch('/api/simulations');
+            if (!resp.ok) return;
+            savedSims = await resp.json();
+        } catch(e) { savedSims = []; }
+        var selSim = document.getElementById('sel-plan-sim');
+        var current = selSim.value;
+        while (selSim.options.length > 1) selSim.remove(1);
+        savedSims.forEach(function(s) {
+            var opt = document.createElement('option');
+            opt.value = s.id;
+            var dd = new Date(s.updatedAt);
+            opt.textContent = s.title + ' (' + dd.toLocaleDateString('es-ES') + ')';
+            selSim.appendChild(opt);
+        });
+        if (current) selSim.value = current;
+    }
+
+    function parseState(item) {
+        try { return typeof item.stateJson === 'string' ? JSON.parse(item.stateJson) : item.stateJson; } catch(e) { return {}; }
+    }
+
+    fetchAndPopulateSimulations();
+
+    var clientMap = {};
+    DB.clients.forEach(function(c) { clientMap[c.code] = c; });
+
+    var clients = [];
+    var sim = null;
+    var chartArr = null, chartMonthly = null, chartPie = null;
+
+    function loadSimulation(simData) {
+        sim = simData;
+        if (!sim || !sim.clientResults || sim.clientResults.length === 0) {
+            document.getElementById('alert-no-sim').classList.remove('d-none');
+            return;
+        }
+        document.getElementById('alert-no-sim').classList.add('d-none');
+
+        clients = sim.clientResults
+            .filter(function(sc) { return !sc.excluded; })
+            .map(function(sc) {
+                var dc = clientMap[sc.code] || {};
+                return {
+                    code: sc.code, name: sc.name, partner: sc.partner,
+                    usersErp: sc.usersErp, isDam: sc.isDam,
+                    arrActual: sc.arrActual, finalArr: sc.finalArr,
+                    satArr: sc.satArr, satDetail: sc.satDetail || [],
+                    infraCost: sc.infraCost, argument: sc.argument,
+                    effectivePct: sc.effectivePct,
+                    satCount: dc.satCount || 0,
+                    satProducts: dc.satProducts || []
+                };
+            });
+
+        var totalExcluded = sim.clientResults.filter(function(sc) { return sc.excluded; }).length;
+        document.getElementById('cfg-excluded-count').textContent = totalExcluded > 0
+            ? totalExcluded + ' cliente(s) excluidos' : '';
+
+        // Config display
+        if (sim.tiers && sim.tiers.length > 0) {
+            var tiersHtml = '';
+            sim.tiers.forEach(function(t) {
+                tiersHtml += '<tr><td class="fw-bold">' + t.label + '</td>'
+                    + '<td class="text-center">' + t.std + '€</td>'
+                    + '<td class="text-center">' + t.dam + '€</td></tr>';
+            });
+            document.getElementById('cfg-tiers').innerHTML = tiersHtml;
+        } else {
+            document.getElementById('cfg-tiers').innerHTML = '<tr><td colspan="3" class="text-muted text-center">Sin tramos</td></tr>';
+        }
+        document.getElementById('cfg-margin').textContent = sim.marginPct + '%';
+        document.getElementById('cfg-increment').textContent = sim.incrementPct + '%';
+        document.getElementById('cfg-infra').textContent = sim.infraEstRate + ' €/usr/año';
+        var d = new Date(sim.timestamp);
+        document.getElementById('cfg-time').textContent = d.toLocaleString('es-ES');
+
+        calculate();
+    }
+
+    document.getElementById('sel-plan-sim').addEventListener('change', function() {
+        var id = this.value;
+        if (!id) return;
+        var found = savedSims.find(function(s) { return s.id == id; });
+        if (found) loadSimulation(parseState(found));
+    });
+
+    function getFilteredClients() {
+        var noSat = document.getElementById('filter-no-sat').checked;
+        var noDam = document.getElementById('filter-no-dam').checked;
+        var maxUsers = parseInt(document.getElementById('filter-max-users').value);
+
+        return clients.filter(function(c) {
+            if (noSat && c.satCount > 0) return false;
+            if (noDam && c.isDam) return false;
+            if (c.usersErp > maxUsers) return false;
+            return true;
+        });
+    }
+
+    function prioritize(list) {
+        return list.slice().sort(function(a, b) {
+            if (a.isDam !== b.isDam) return a.isDam ? 1 : -1;
+            if (a.satCount !== b.satCount) return a.satCount - b.satCount;
+            return a.usersErp - b.usersErp;
+        });
+    }
+
+    function calculate() {
+        var capacity = parseInt(document.getElementById('rate-capacity').value);
+        var maxUsers = parseInt(document.getElementById('filter-max-users').value);
+
+        document.getElementById('val-capacity').textContent = capacity + ' cl/mes';
+        document.getElementById('val-max-users').textContent = maxUsers >= 500 ? 'Sin límite' : maxUsers;
+
+        var filtered = getFilteredClients();
+        var sorted = prioritize(filtered);
+
+        var totalMonths = Math.ceil(sorted.length / capacity) || 0;
+        var months = [];
+        var cumulativeArr = 0;
+        var cumulativeArrActual = 0;
+        var tableRows = [];
+
+        for (var m = 0; m < totalMonths; m++) {
+            var start = m * capacity;
+            var end = Math.min(start + capacity, sorted.length);
+            var monthArr = 0;
+            var monthArrActual = 0;
+
+            for (var i = start; i < end; i++) {
+                var c = sorted[i];
+                monthArr += c.finalArr;
+                monthArrActual += c.arrActual;
+
+                cumulativeArr += c.finalArr;
+                cumulativeArrActual += c.arrActual;
+
+                tableRows.push({
+                    month: m + 1,
+                    order: i + 1,
+                    code: c.code,
+                    name: c.name,
+                    partner: c.partner,
+                    usersErp: c.usersErp,
+                    isDam: c.isDam,
+                    satCount: c.satCount,
+                    satProducts: c.satProducts,
+                    satDetail: c.satDetail,
+                    arrActual: c.arrActual,
+                    arrNew: c.finalArr,
+                    effectivePct: c.effectivePct,
+                    delta: c.finalArr - c.arrActual,
+                    cumulativeArrActual: cumulativeArrActual,
+                    cumulativeArr: cumulativeArr
+                });
+            }
+
+            months.push({
+                month: m + 1,
+                clients: end - start,
+                monthArr: monthArr,
+                monthArrActual: monthArrActual,
+                cumulativeArr: cumulativeArr,
+                cumulativeArrActual: cumulativeArrActual
+            });
+        }
+
+        var totalNewArr = sorted.reduce(function(s, c) { return s + c.finalArr; }, 0);
+        var totalActual = sorted.reduce(function(s, c) { return s + c.arrActual; }, 0);
+        var totalUsers = sorted.reduce(function(s, c) { return s + c.usersErp; }, 0);
+
+        document.getElementById('kpi-elegibles').textContent = sorted.length;
+        document.getElementById('kpi-arr-nuevo').textContent = fmtM(totalNewArr);
+        document.getElementById('kpi-delta').textContent = (totalNewArr - totalActual >= 0 ? '+' : '') + fmtM(totalNewArr - totalActual);
+        document.getElementById('kpi-meses').textContent = totalMonths;
+        document.getElementById('kpi-users').textContent = fmt(totalUsers);
+        document.getElementById('kpi-avg').textContent = sorted.length > 0 ? Math.round(totalUsers / sorted.length) : 0;
+
+        renderCharts(months);
+        renderTable(tableRows);
+    }
+
+    function renderCharts(months) {
+        var labels = months.map(function(m) { return 'Mes ' + m.month; });
+        var cumData = months.map(function(m) { return Math.round(m.cumulativeArr); });
+        var cumActualData = months.map(function(m) { return Math.round(m.cumulativeArrActual); });
+        var monthlyData = months.map(function(m) { return Math.round(m.monthArr); });
+
+        if (chartArr) chartArr.destroy();
+        chartArr = new Chart(document.getElementById('chart-arr'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'ARR Nuevo Acumulado (simulado)',
+                        data: cumData,
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25,135,84,0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#198754',
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'ARR Actual Acumulado (lo que cobrábamos)',
+                        data: cumActualData,
+                        borderColor: '#6c757d',
+                        backgroundColor: 'rgba(108,117,125,0.05)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        borderWidth: 2,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return ctx.dataset.label + ': ' + fmt(ctx.raw) + ' €';
+                            },
+                            afterBody: function(items) {
+                                if (items.length >= 2) {
+                                    var diff = items[0].raw - items[1].raw;
+                                    return 'Delta: ' + (diff >= 0 ? '+' : '') + fmt(diff) + ' €';
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '€/año' },
+                        ticks: { callback: function(v) { return fmtK(v); } }
+                    }
+                }
+            }
+        });
+
+        if (chartMonthly) chartMonthly.destroy();
+        chartMonthly = new Chart(document.getElementById('chart-monthly'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'ARR Nuevo del Mes',
+                    data: monthlyData,
+                    backgroundColor: 'rgba(13,110,253,0.7)',
+                    borderColor: '#0d6efd',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function(ctx) { return fmt(ctx.raw) + ' €'; } } }
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '€/año' },
+                        ticks: { callback: function(v) { return fmtK(v); } }
+                    }
+                }
+            }
+        });
+
+        var elegibles = getFilteredClients().length;
+        var totalAll = clients.length;
+        var excluidos = totalAll - elegibles;
+        var noSat = document.getElementById('filter-no-sat').checked;
+        var noDam = document.getElementById('filter-no-dam').checked;
+        var maxU = parseInt(document.getElementById('filter-max-users').value);
+
+        var exSat = noSat ? clients.filter(function(c) { return c.satCount > 0; }).length : 0;
+        var exDam = noDam ? clients.filter(function(c) { return c.isDam && !(noSat && c.satCount > 0); }).length : 0;
+        var exUsers = Math.max(0, excluidos - exSat - exDam);
+
+        if (chartPie) chartPie.destroy();
+        chartPie = new Chart(document.getElementById('chart-pie'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Elegibles', 'Excluidos: satélites', 'Excluidos: DAM', 'Excluidos: máx. usuarios'],
+                datasets: [{
+                    data: [elegibles, exSat, exDam, exUsers],
+                    backgroundColor: ['#198754', '#fd7e14', '#0dcaf0', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    function renderTable(rows) {
+        var search = document.getElementById('filter-search').value.toLowerCase();
+        var filtered = rows;
+        if (search) {
+            filtered = rows.filter(function(c) {
+                return (c.name || '').toLowerCase().includes(search) || String(c.code).includes(search);
+            });
+        }
+
+        // Group rows by month for totals
+        var byMonth = {};
+        filtered.forEach(function(c) {
+            if (!byMonth[c.month]) byMonth[c.month] = [];
+            byMonth[c.month].push(c);
+        });
+
+        var html = '';
+        var prevMonth = 0;
+        filtered.forEach(function(c, idx) {
+            var monthChanged = c.month !== prevMonth;
+
+            // Render total row for previous month
+            if (monthChanged && prevMonth > 0 && byMonth[prevMonth]) {
+                html += renderMonthTotal(byMonth[prevMonth]);
+            }
+            prevMonth = c.month;
+
+            if (monthChanged) {
+                html += '<tr class="table-warning"><td colspan="15" class="fw-bold py-1">'
+                    + '<i class="bi bi-calendar-event"></i> Mes ' + c.month
+                    + '</td></tr>';
+            }
+
+            var deltaClass = c.delta >= 0 ? 'text-success' : 'text-danger';
+            var cumDelta = c.cumulativeArr - c.cumulativeArrActual;
+            var cumDeltaClass = cumDelta >= 0 ? 'text-success' : 'text-danger';
+            var damBadge = c.isDam ? '<span class="badge bg-info">DAM</span>' : '<span class="badge bg-light text-dark border">STD</span>';
+            var satBadges = c.satDetail.map(function(s) { return '<span class="badge bg-light text-dark border me-1">' + s + '</span>'; }).join('');
+
+            html += '<tr>'
+                + '<td class="text-center"><span class="badge bg-primary">' + c.month + '</span></td>'
+                + '<td class="text-center text-muted">' + c.order + '</td>'
+                + '<td><code>' + c.code + '</code></td>'
+                + '<td class="text-nowrap">' + (c.name || '') + '</td>'
+                + '<td><small>' + (c.partner || '') + '</small></td>'
+                + '<td class="text-end">' + c.usersErp + '</td>'
+                + '<td class="text-center">' + damBadge + '</td>'
+                + '<td class="text-center">' + satBadges + '</td>'
+                + '<td class="text-end">' + fmt(c.arrActual) + ' €</td>'
+                + '<td class="text-end text-success fw-bold">' + fmt(c.arrNew) + ' €</td>'
+                + '<td class="text-end text-muted">' + c.effectivePct + '%</td>'
+                + '<td class="text-end ' + deltaClass + '">' + (c.delta >= 0 ? '+' : '') + fmt(c.delta) + ' €</td>'
+                + '<td class="text-end text-muted">' + fmt(c.cumulativeArrActual) + ' €</td>'
+                + '<td class="text-end fw-bold">' + fmt(c.cumulativeArr) + ' €</td>'
+                + '<td class="text-end ' + cumDeltaClass + '">' + (cumDelta >= 0 ? '+' : '') + fmt(cumDelta) + ' €</td>'
+                + '</tr>';
+        });
+
+        // Total for last month
+        if (prevMonth > 0 && byMonth[prevMonth]) {
+            html += renderMonthTotal(byMonth[prevMonth]);
+        }
+
+        document.getElementById('client-table').innerHTML = html;
+    }
+
+    function renderMonthTotal(monthRows) {
+        var mUsers = 0, mArrActual = 0, mArrNew = 0, mDelta = 0;
+        monthRows.forEach(function(c) {
+            mUsers += c.usersErp;
+            mArrActual += c.arrActual;
+            mArrNew += c.arrNew;
+            mDelta += c.delta;
+        });
+        var last = monthRows[monthRows.length - 1];
+        var cumDelta = last.cumulativeArr - last.cumulativeArrActual;
+        var mDeltaClass = mDelta >= 0 ? 'text-success' : 'text-danger';
+        var cumDeltaClass = cumDelta >= 0 ? 'text-success' : 'text-danger';
+
+        return '<tr class="table-secondary fw-bold" style="font-size:0.85rem">'
+            + '<td class="text-center"><span class="badge bg-dark">M' + last.month + '</span></td>'
+            + '<td class="text-center">' + monthRows.length + ' cl</td>'
+            + '<td colspan="4">Total Mes ' + last.month + '</td>'
+            + '<td colspan="2"></td>'
+            + '<td class="text-end">' + fmt(mArrActual) + ' €</td>'
+            + '<td class="text-end text-success">' + fmt(mArrNew) + ' €</td>'
+            + '<td></td>'
+            + '<td class="text-end ' + mDeltaClass + '">' + (mDelta >= 0 ? '+' : '') + fmt(mDelta) + ' €</td>'
+            + '<td class="text-end">' + fmt(last.cumulativeArrActual) + ' €</td>'
+            + '<td class="text-end">' + fmt(last.cumulativeArr) + ' €</td>'
+            + '<td class="text-end ' + cumDeltaClass + '">' + (cumDelta >= 0 ? '+' : '') + fmt(cumDelta) + ' €</td>'
+            + '</tr>';
+    }
+
+    document.getElementById('rate-capacity').addEventListener('input', calculate);
+    document.getElementById('filter-no-sat').addEventListener('change', calculate);
+    document.getElementById('filter-no-dam').addEventListener('change', calculate);
+    document.getElementById('filter-max-users').addEventListener('input', calculate);
+    document.getElementById('filter-search').addEventListener('input', calculate);
+
+    // --- Plan persistence (DB via API) ---
+    var cachedPlans = [];
+
+    async function fetchPlans() {
+        try { var r = await fetch('/api/plans'); return r.ok ? await r.json() : []; } catch(e) { return []; }
+    }
+    async function refreshPlanDropdown() {
+        cachedPlans = await fetchPlans();
+        var sel = document.getElementById('sel-saved-plans');
+        sel.innerHTML = '<option value="">— Seleccionar plan guardado (' + cachedPlans.length + ') —</option>';
+        cachedPlans.forEach(function(p) {
+            var opt = document.createElement('option');
+            opt.value = p.id;
+            var d = new Date(p.updatedAt);
+            opt.textContent = p.title + ' (' + d.toLocaleDateString('es-ES') + ')';
+            sel.appendChild(opt);
+        });
+    }
+    function parsePlanState(plan) {
+        try { return typeof plan.stateJson === 'string' ? JSON.parse(plan.stateJson) : plan.stateJson; } catch(e) { return {}; }
+    }
+    function buildPlanState() {
+        return {
+            simId: document.getElementById('sel-plan-sim').value,
+            capacity: parseInt(document.getElementById('rate-capacity').value),
+            filterNoSat: document.getElementById('filter-no-sat').checked,
+            filterNoDam: document.getElementById('filter-no-dam').checked,
+            filterMaxUsers: parseInt(document.getElementById('filter-max-users').value)
+        };
+    }
+    function applyPlanState(state) {
+        if (state.simId) {
+            document.getElementById('sel-plan-sim').value = state.simId;
+            var found = savedSims.find(function(s) { return s.id == state.simId; });
+            if (found) loadSimulation(parseState(found));
+        }
+        if (state.capacity) document.getElementById('rate-capacity').value = state.capacity;
+        if (state.filterNoSat !== undefined) document.getElementById('filter-no-sat').checked = state.filterNoSat;
+        if (state.filterNoDam !== undefined) document.getElementById('filter-no-dam').checked = state.filterNoDam;
+        if (state.filterMaxUsers) document.getElementById('filter-max-users').value = state.filterMaxUsers;
+        calculate();
+    }
+
+    var activePlanId = null;
+    var activePlanTitle = '';
+
+    function showPlanStatus(msg) {
+        var el = document.getElementById('plan-status');
+        el.textContent = msg;
+        setTimeout(function() { el.textContent = ''; }, 3000);
+    }
+
+    function updateOverwritePlanButton() {
+        var btn = document.getElementById('btn-overwrite-plan');
+        if (activePlanId) {
+            btn.classList.remove('d-none');
+            btn.title = 'Sobreescribir "' + activePlanTitle + '"';
+        } else {
+            btn.classList.add('d-none');
+        }
+    }
+
+    document.getElementById('btn-save-plan').addEventListener('click', async function() {
+        var title = document.getElementById('plan-title').value.trim();
+        if (!title) { document.getElementById('plan-title').focus(); return; }
+        var state = buildPlanState();
+        try {
+            var resp = await fetch('/api/plans', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: title, stateJson: JSON.stringify(state) })
+            });
+            if (!resp.ok) { showPlanStatus('✗ Error al guardar'); return; }
+            var saved = await resp.json();
+            activePlanId = saved.id;
+            activePlanTitle = saved.title;
+            await refreshPlanDropdown();
+            document.getElementById('sel-saved-plans').value = saved.id;
+            document.getElementById('plan-title').value = '';
+            updateOverwritePlanButton();
+            showPlanStatus('✓ Plan "' + title + '" guardado');
+        } catch(e) { showPlanStatus('✗ Error de conexión'); }
+    });
+
+    document.getElementById('btn-overwrite-plan').addEventListener('click', async function() {
+        if (!activePlanId) return;
+        var state = buildPlanState();
+        try {
+            var resp = await fetch('/api/plans/' + activePlanId, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stateJson: JSON.stringify(state) })
+            });
+            if (!resp.ok) { showPlanStatus('✗ Error al actualizar'); return; }
+            await refreshPlanDropdown();
+            document.getElementById('sel-saved-plans').value = activePlanId;
+            showPlanStatus('✓ Actualizado "' + activePlanTitle + '"');
+        } catch(e) { showPlanStatus('✗ Error de conexión'); }
+    });
+
+    document.getElementById('sel-saved-plans').addEventListener('change', function() {
+        var id = this.value;
+        if (!id) { activePlanId = null; activePlanTitle = ''; updateOverwritePlanButton(); return; }
+        var found = cachedPlans.find(function(p) { return p.id == id; });
+        if (!found) return;
+        activePlanId = found.id;
+        activePlanTitle = found.title;
+        applyPlanState(parsePlanState(found));
+        updateOverwritePlanButton();
+        showPlanStatus('✓ Plan "' + found.title + '" cargado');
+    });
+
+    document.getElementById('btn-delete-plan').addEventListener('click', async function() {
+        var id = document.getElementById('sel-saved-plans').value;
+        if (!id) return;
+        var found = cachedPlans.find(function(p) { return p.id == id; });
+        if (!found || !confirm('¿Eliminar plan "' + found.title + '"?')) return;
+        try {
+            await fetch('/api/plans/' + id, { method: 'DELETE' });
+            if (activePlanId == id) { activePlanId = null; activePlanTitle = ''; }
+            await refreshPlanDropdown();
+            updateOverwritePlanButton();
+            showPlanStatus('✓ Plan eliminado');
+        } catch(e) { showPlanStatus('✗ Error al eliminar'); }
+    });
+
+    refreshPlanDropdown();
+})();
+</script>
+}
