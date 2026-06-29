@@ -458,7 +458,8 @@
             var opt = document.createElement('option');
             opt.value = s.id;
             var d = new Date(s.updatedAt);
-            opt.textContent = s.title + ' (' + d.toLocaleDateString('es-ES') + ')';
+            var author = s.userEmail ? s.userEmail.split('@@')[0] : '';
+            opt.textContent = s.title + ' (' + d.toLocaleDateString('es-ES') + ' · ' + author + ')';
             sel.appendChild(opt);
         });
     }

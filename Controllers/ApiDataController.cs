@@ -29,11 +29,9 @@ public class ApiDataController : ControllerBase
     [HttpGet("simulations")]
     public async Task<IActionResult> GetSimulations()
     {
-        var email = GetEmail();
         var sims = await _db.SavedSimulations
-            .Where(s => s.UserEmail == email)
             .OrderByDescending(s => s.UpdatedAt)
-            .Select(s => new { s.Id, s.Title, s.StateJson, s.CreatedAt, s.UpdatedAt })
+            .Select(s => new { s.Id, s.Title, s.UserEmail, s.StateJson, s.CreatedAt, s.UpdatedAt })
             .ToListAsync();
         return Ok(sims);
     }
@@ -86,11 +84,9 @@ public class ApiDataController : ControllerBase
     [HttpGet("plans")]
     public async Task<IActionResult> GetPlans()
     {
-        var email = GetEmail();
         var plans = await _db.SavedPlans
-            .Where(p => p.UserEmail == email)
             .OrderByDescending(p => p.UpdatedAt)
-            .Select(p => new { p.Id, p.Title, p.StateJson, p.CreatedAt, p.UpdatedAt })
+            .Select(p => new { p.Id, p.Title, p.UserEmail, p.StateJson, p.CreatedAt, p.UpdatedAt })
             .ToListAsync();
         return Ok(plans);
     }

@@ -211,7 +211,7 @@
                 + 'style="border-color:' + color + '" checked>'
                 + '<label class="form-check-label" for="plan-' + i + '">'
                 + '<span class="fw-bold" style="color:' + color + '">' + p.title + '</span>'
-                + '<br><small class="text-muted">' + d.toLocaleDateString('es-ES') + '</small>'
+                + '<br><small class="text-muted">' + d.toLocaleDateString('es-ES') + (p.userEmail ? ' · ' + p.userEmail.split('@@')[0] : '') + '</small>'
                 + '</label></div></div>';
         });
         document.getElementById('plan-checkboxes').innerHTML = cbHtml;

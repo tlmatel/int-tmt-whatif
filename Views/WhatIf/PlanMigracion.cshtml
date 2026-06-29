@@ -310,7 +310,8 @@
             var opt = document.createElement('option');
             opt.value = s.id;
             var dd = new Date(s.updatedAt);
-            opt.textContent = s.title + ' (' + dd.toLocaleDateString('es-ES') + ')';
+            var author = s.userEmail ? s.userEmail.split('@@')[0] : '';
+            opt.textContent = s.title + ' (' + dd.toLocaleDateString('es-ES') + ' · ' + author + ')';
             selSim.appendChild(opt);
         });
         if (current) selSim.value = current;
@@ -717,7 +718,8 @@
             var opt = document.createElement('option');
             opt.value = p.id;
             var d = new Date(p.updatedAt);
-            opt.textContent = p.title + ' (' + d.toLocaleDateString('es-ES') + ')';
+            var author = p.userEmail ? p.userEmail.split('@@')[0] : '';
+            opt.textContent = p.title + ' (' + d.toLocaleDateString('es-ES') + ' · ' + author + ')';
             sel.appendChild(opt);
         });
     }
